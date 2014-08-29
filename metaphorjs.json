@@ -10,6 +10,19 @@
         "expose": ["animate", "stopAnimation"]
     },
 
+    "npm": {
+        "target": "dist/metaphorjs.animate.npm.js",
+        "files": [
+            ["src/metaphorjs.animate.js", {"keepExports": true}]
+        ],
+        "require": {
+            "metaphorjs-promise": "Promise"
+        },
+        "omit": [
+            "../metaphorjs-promise/src/metaphorjs.promise.js"
+        ]
+    },
+
     "amd": {
         "target": "dist/metaphorjs.animate.amd.js",
         "files": [

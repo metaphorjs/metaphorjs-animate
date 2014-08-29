@@ -1,0 +1,38 @@
+{
+    "standalone": {
+        "wrap": true,
+        "global": true,
+        "target": "dist/metaphorjs.animate.js",
+        "files": [
+            "../metaphorjs/src/MetaphorJs.js",
+            ["src/metaphorjs.animate.js", {"as": "animate"}]
+        ],
+        "expose": ["animate", "stopAnimation"]
+    },
+
+    "amd": {
+        "target": "dist/metaphorjs.animate.amd.js",
+        "files": [
+            ["src/metaphorjs.animate.js", {"returnExports": true}]
+        ],
+        "omit": [
+            "../metaphorjs-promise/src/metaphorjs.promise.js"
+        ],
+        "define": {
+            "name": "metaphorjs-animate",
+            "deps": {
+                "metaphorjs-promise": "Promise"
+            }
+        }
+    },
+
+    "compile-standalone": {
+        "target": "dist/metaphorjs.animate.min.js",
+        "compile": "standalone"
+    },
+
+    "compile-amd": {
+        "target": "dist/metaphorjs.animate.amd.min.js",
+        "compile": "amd"
+    }
+}

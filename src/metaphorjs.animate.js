@@ -30,7 +30,7 @@ module.exports = function(){
         cssAnimations   = !!getAnimationPrefixes(),
 
         animFrame       = window.requestAnimationFrame ? window.requestAnimationFrame : function(cb) {
-            window.setTimeout(cb, 0);
+            setTimeout(cb, 0);
         },
 
         dataParam       = "mjsAnimationQueue",

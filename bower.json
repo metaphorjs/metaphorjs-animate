@@ -1,26 +1,26 @@
 {
-  "name": "metaphorjs-animate",
-  "version": "0.1.0",
-  "authors": [
-    "kuindji <kuindji@gmail.com>"
-  ],
-  "description": "MetaphorJs animation engine",
-  "main": "dist/metaphorjs.animate.amd.min.js",
-  "moduleType": [
-    "amd"
-  ],
-  "keywords": [
-    "animation"
-  ],
-  "license": "MIT",
-  "homepage": "https://github.com/kuindji/metaphorjs-animate",
-  "ignore": [
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "metaphorjs-promise": "*"
-  }
+    "name": "metaphorjs-animate",
+    "version": "0.1.1",
+    "authors": [
+        "kuindji <kuindji@gmail.com>"
+    ],
+    "description": "MetaphorJs animation engine",
+    "main": "dist/metaphorjs.animate.amd.min.js",
+    "moduleType": [
+        "amd"
+    ],
+    "keywords": [
+        "animation"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/kuindji/metaphorjs-animate",
+    "ignore": [
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "metaphorjs-promise": "*"
+    }
 }

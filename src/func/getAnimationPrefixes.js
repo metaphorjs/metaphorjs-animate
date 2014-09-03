@@ -1,4 +1,6 @@
 
+var undf = require("../../../metaphorjs/src/var/undf.js");
+
 module.exports = function(){
 
     var domPrefixes         = ['Moz', 'Webkit', 'ms', 'O', 'Khtml'],
@@ -6,6 +8,7 @@ module.exports = function(){
         animationDuration   = "animationDuration",
         transitionDelay     = "transitionDelay",
         transitionDuration  = "transitionDuration",
+        transform           = "transform",
         prefixes            = null,
 
 
@@ -16,18 +19,19 @@ module.exports = function(){
                 pfx,
                 i, len;
 
-            if (el.style['animationName'] !== undefined) {
+            if (el.style['animationName'] !== undf) {
                 animation = true;
             }
             else {
                 for(i = 0, len = domPrefixes.length; i < len; i++) {
                     pfx = domPrefixes[i];
-                    if (el.style[ pfx + 'AnimationName' ] !== undefined) {
+                    if (el.style[ pfx + 'AnimationName' ] !== undf) {
                         animation           = true;
                         animationDelay      = pfx + "AnimationDelay";
                         animationDuration   = pfx + "AnimationDuration";
                         transitionDelay     = pfx + "TransitionDelay";
                         transitionDuration  = pfx + "TransitionDuration";
+                        transform           = pfx + "Transform";
                         break;
                     }
                 }
@@ -41,7 +45,8 @@ module.exports = function(){
             animationDelay: animationDelay,
             animationDuration: animationDuration,
             transitionDelay: transitionDelay,
-            transitionDuration: transitionDuration
+            transitionDuration: transitionDuration,
+            transform: transform
         };
     }
 

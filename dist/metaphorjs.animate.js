@@ -1,11 +1,14 @@
 (function(){
 "use strict";
 
- {
+var MetaphorJs = {
     lib: {},
     cmp: {},
     view: {}
 };
+
+var undf = undefined;
+
 
 var getAnimationPrefixes = function(){
 
@@ -14,6 +17,7 @@ var getAnimationPrefixes = function(){
         animationDuration   = "animationDuration",
         transitionDelay     = "transitionDelay",
         transitionDuration  = "transitionDuration",
+        transform           = "transform",
         prefixes            = null,
 
 
@@ -24,18 +28,19 @@ var getAnimationPrefixes = function(){
                 pfx,
                 i, len;
 
-            if (el.style['animationName'] !== undefined) {
+            if (el.style['animationName'] !== undf) {
                 animation = true;
             }
             else {
                 for(i = 0, len = domPrefixes.length; i < len; i++) {
                     pfx = domPrefixes[i];
-                    if (el.style[ pfx + 'AnimationName' ] !== undefined) {
+                    if (el.style[ pfx + 'AnimationName' ] !== undf) {
                         animation           = true;
                         animationDelay      = pfx + "AnimationDelay";
                         animationDuration   = pfx + "AnimationDuration";
                         transitionDelay     = pfx + "TransitionDelay";
                         transitionDuration  = pfx + "TransitionDuration";
+                        transform           = pfx + "Transform";
                         break;
                     }
                 }
@@ -49,7 +54,8 @@ var getAnimationPrefixes = function(){
             animationDelay: animationDelay,
             animationDuration: animationDuration,
             transitionDelay: transitionDelay,
-            transitionDuration: transitionDuration
+            transitionDuration: transitionDuration,
+            transform: transform
         };
     }
 
@@ -144,13 +150,6 @@ var nextUid = function(){
     };
 }();
 
-var strUndef = "undefined";
-
-
-var isUndefined = function(any) {
-    return typeof any == strUndef;
-};
-
 
 
 /**
@@ -170,7 +169,7 @@ var data = function(){
         var id  = getNodeId(el),
             obj = dataCache[id];
 
-        if (!isUndefined(value)) {
+        if (value !== undf) {
             if (!obj) {
                 obj = dataCache[id] = {};
             }
@@ -178,7 +177,7 @@ var data = function(){
             return value;
         }
         else {
-            return obj ? obj[key] : undefined;
+            return obj ? obj[key] : undf;
         }
     };
 
@@ -214,7 +213,73 @@ var removeClass = function(el, cls) {
     }
 };
 var isFunction = function(value) {
-    return typeof value === 'function';
+    return typeof value == 'function';
+};
+var toString = Object.prototype.toString;
+
+
+
+var varType = function(){
+
+    var types = {
+        '[object String]': 0,
+        '[object Number]': 1,
+        '[object Boolean]': 2,
+        '[object Object]': 3,
+        '[object Function]': 4,
+        '[object Array]': 5,
+        '[object RegExp]': 9,
+        '[object Date]': 10
+    };
+
+
+    /**
+        'string': 0,
+        'number': 1,
+        'boolean': 2,
+        'object': 3,
+        'function': 4,
+        'array': 5,
+        'null': 6,
+        'undefined': 7,
+        'NaN': 8,
+        'regexp': 9,
+        'date': 10
+    */
+
+    return function(val) {
+
+        if (!val) {
+            if (val === null) {
+                return 6;
+            }
+            if (val === undf) {
+                return 7;
+            }
+        }
+
+        var num = types[toString.call(val)];
+
+        if (num === undf) {
+            return -1;
+        }
+
+        if (num == 1 && isNaN(val)) {
+            num = 8;
+        }
+
+        return num;
+    };
+
+}();
+
+
+/**
+ * @param {*} value
+ * @returns {boolean}
+ */
+var isArray = function(value) {
+    return varType(value) === 5;
 };
 
 
@@ -228,11 +293,16 @@ var stopAnimation = function(el) {
     if (isArray(queue) && queue.length) {
         current = queue[0];
 
-        if (current && current.stages) {
-            position = current.position;
-            stages = current.stages;
-            removeClass(el, stages[position]);
-            removeClass(el, stages[position] + "-active");
+        if (current) {
+            if (current.stages) {
+                position = current.position;
+                stages = current.stages;
+                removeClass(el, stages[position]);
+                removeClass(el, stages[position] + "-active");
+            }
+            if (current.deferred) {
+                current.deferred.reject(current.el);
+            }
         }
     }
     else if (isFunction(queue)) {
@@ -245,22 +315,10 @@ var stopAnimation = function(el) {
     data(el, "mjsAnimationQueue", null);
 };
 
-var toString = Object.prototype.toString;
+
+
 var isObject = function(value) {
-    return value != null && typeof value === 'object';
-};
-var isNumber = function(value) {
-    return typeof value == "number" && !isNaN(value);
-};
-
-
-/**
- * @param {*} value
- * @returns {boolean}
- */
-var isArray = function(value) {
-    return !!(value && isObject(value) && isNumber(value.length) &&
-                toString.call(value) == '[object Array]' || false);
+    return value !== null && typeof value == "object" && varType(value) > 2;
 };
 
 
@@ -271,10 +329,7 @@ var isArray = function(value) {
  */
 var isThenable = function(any) {
     var then;
-    if (!any) {
-        return false;
-    }
-    if (!isObject(any) && !isFunction(any)) {
+    if (!any || (!isObject(any) && !isFunction(any))) {
         return false;
     }
     return isFunction((then = any.then)) ?
@@ -282,16 +337,15 @@ var isThenable = function(any) {
 };
 
 var slice = Array.prototype.slice;
-/**
- * @param {*} obj
- * @returns {boolean}
- */
-var isPlainObject = function(obj) {
-    return !!(obj && obj.constructor === Object);
+
+
+var isPlainObject = function(value) {
+    return varType(value) === 3;
 };
 
+
 var isBool = function(value) {
-    return typeof value == "boolean";
+    return varType(value) === 2;
 };
 var isNull = function(value) {
     return value === null;
@@ -329,14 +383,14 @@ var extend = function extend() {
         if (src = args.shift()) {
             for (k in src) {
 
-                if (src.hasOwnProperty(k) && !isUndefined((value = src[k]))) {
+                if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
 
                     if (deep) {
                         if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
                             extend(dst[k], value, override, deep);
                         }
                         else {
-                            if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
+                            if (override === true || dst[k] == undf) { // == checks for null and undefined
                                 if (isPlainObject(value)) {
                                     dst[k] = {};
                                     extend(dst[k], value, override, true);
@@ -348,7 +402,7 @@ var extend = function extend() {
                         }
                     }
                     else {
-                        if (override === true || isUndefined(dst[k]) || isNull(dst[k])) {
+                        if (override === true || dst[k] == undf) {
                             dst[k] = value;
                         }
                     }
@@ -375,7 +429,8 @@ var bind = Function.prototype.bind ?
                   };
               };
 
-/**
+
+var strUndef = "undefined";/**
  * @param {Function} fn
  * @param {Object} context
  * @param {[]} args
@@ -391,14 +446,17 @@ var error = function(e) {
 
     var stack = e.stack || (new Error).stack;
 
-    async(function(){
-        if (!isUndefined(console) && console.log) {
+    if (typeof console != strUndef && console.log) {
+        async(function(){
             console.log(e);
             if (stack) {
                 console.log(stack);
             }
-        }
-    });
+        });
+    }
+    else {
+        throw e;
+    }
 };
 
 
@@ -501,7 +559,7 @@ var Promise = function(){
         self._dones      = [];
         self._fails      = [];
 
-        if (!isUndefined(fn)) {
+        if (arguments.length > 0) {
 
             if (then = isThenable(fn)) {
                 if (fn instanceof Promise) {
@@ -1112,8 +1170,115 @@ var addClass = function(el, cls) {
         el.className += " " + cls;
     }
 };
+
+
 var isString = function(value) {
-    return typeof value == "string";
+    return varType(value) === 0;
+};
+
+
+var getScrollTop = function() {
+    if(window.pageYOffset !== undf) {
+        //most browsers except IE before #9
+        return function(){
+            return window.pageYOffset;
+        };
+    }
+    else{
+        var B = document.body; //IE 'quirks'
+        var D = document.documentElement; //IE with doctype
+        if (D.clientHeight) {
+            return function() {
+                return D.scrollTop;
+            };
+        }
+        else {
+            return function() {
+                return B.scrollTop;
+            };
+        }
+    }
+}();
+
+
+var getScrollLeft = function() {
+    if(window.pageXOffset !== undf) {
+        //most browsers except IE before #9
+        return function(){
+            return window.pageXOffset;
+        };
+    }
+    else{
+        var B = document.body; //IE 'quirks'
+        var D = document.documentElement; //IE with doctype
+        if (D.clientWidth) {
+            return function() {
+                return D.scrollLeft;
+            };
+        }
+        else {
+            return function() {
+                return B.scrollLeft;
+            };
+        }
+    }
+}();
+
+
+var getElemRect = function(el) {
+
+    var rect,
+        st = getScrollTop(),
+        sl = getScrollLeft(),
+        bcr;
+
+    if (el === window) {
+
+        var doc = document.documentElement;
+
+        rect = {
+            left: 0,
+            right: doc.clientWidth,
+            top: st,
+            bottom: doc.clientHeight + st,
+            width: doc.clientWidth,
+            height: doc.clientHeight
+        };
+    }
+    else {
+        if (el.getBoundingClientRect) {
+            bcr = el.getBoundingClientRect();
+            rect = {
+                left: bcr.left + sl,
+                top: bcr.top + st,
+                right: bcr.right + sl,
+                bottom: bcr.bottom + st
+            };
+
+            rect.width = rect.right - rect.left;
+            rect.height = rect.bottom - rect.top;
+        }
+        else {
+            rect = {
+                left: el.offsetLeft + sl,
+                top: el.offsetTop + st,
+                width: el.offsetWidth,
+                height: el.offsetHeight,
+                right: 0,
+                bottom: 0
+            };
+        }
+    }
+
+    rect.getCenter = function() {
+        return this.width / 2;
+    };
+
+    rect.getCenterX = function() {
+        return this.left + this.width / 2;
+    };
+
+    return rect;
 };
 
 
@@ -1130,7 +1295,9 @@ var animate = function(){
 
         animId          = 0,
 
-        cssAnimations   = !!getAnimationPrefixes(),
+        prefixes        = getAnimationPrefixes(),
+
+        cssAnimations   = !!prefixes,
 
         animFrame       = window.requestAnimationFrame ? window.requestAnimationFrame : function(cb) {
             setTimeout(cb, 0);
@@ -1158,14 +1325,15 @@ var animate = function(){
                 next;
             if (queue.length) {
                 next = queue[0];
-                animationStage(next.el, next.stages, 0, next.start, next.deferred, false, next.id);
+                animationStage(next.el, next.stages, 0, next.start, next.deferred, false, next.id, next.step);
             }
             else {
                 data(el, dataParam, null);
             }
         },
 
-        animationStage  = function animationStage(el, stages, position, startCallback, deferred, first, id) {
+        animationStage  = function animationStage(el, stages, position, startCallback,
+                                                  deferred, first, id, stepCallback) {
 
             var stopped   = function() {
                 var q = data(el, dataParam);
@@ -1193,7 +1361,7 @@ var animate = function(){
                 }
                 else {
                     data(el, dataParam)[0].position = position;
-                    animationStage(el, stages, position, null, deferred);
+                    animationStage(el, stages, position, null, deferred, false, id, stepCallback);
                 }
 
                 removeClass(el, stages[thisPosition]);
@@ -1207,6 +1375,8 @@ var animate = function(){
                 }
 
                 addClass(el, stages[position] + "-active");
+
+                stepCallback && stepCallback(el, position, "active");
 
                 var duration = getAnimationDuration(el);
 
@@ -1226,6 +1396,8 @@ var animate = function(){
 
                 addClass(el, stages[position]);
 
+                stepCallback && stepCallback(el, position, "start");
+
                 var promise;
 
                 if (startCallback) {
@@ -1241,11 +1413,13 @@ var animate = function(){
                 }
             };
 
+
+
             first ? animFrame(start) : start();
         };
 
 
-    var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace) {
+    var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
 
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
@@ -1305,6 +1479,7 @@ var animate = function(){
                     el: el,
                     stages: stages,
                     start: startCallback,
+                    step: stepCallback,
                     deferred: deferred,
                     position: 0,
                     id: id
@@ -1312,7 +1487,7 @@ var animate = function(){
                 data(el, dataParam, queue);
 
                 if (queue.length == 1) {
-                    animationStage(el, stages, 0, startCallback, deferred, true, id);
+                    animationStage(el, stages, 0, startCallback, deferred, true, id, stepCallback);
                 }
 
                 return deferred;
@@ -1384,6 +1559,8 @@ var animate = function(){
     };
 
     animate.stop = stopAnimation;
+    animate.prefixes = prefixes;
+    animate.cssAnimations = cssAnimations;
 
     return animate;
 }();

@@ -1,7 +1,8 @@
 
 var data = require("../../../metaphorjs/src/func/dom/data.js"),
     removeClass = require("../../../metaphorjs/src/func/dom/removeClass.js"),
-    isFunction = require("../../../metaphorjs/src/func/isFunction.js");
+    isFunction = require("../../../metaphorjs/src/func/isFunction.js"),
+    isArray = require("../../../metaphorjs/src/func/isArray.js");
 
 module.exports = function(el) {
 
@@ -13,11 +14,16 @@ module.exports = function(el) {
     if (isArray(queue) && queue.length) {
         current = queue[0];
 
-        if (current && current.stages) {
-            position = current.position;
-            stages = current.stages;
-            removeClass(el, stages[position]);
-            removeClass(el, stages[position] + "-active");
+        if (current) {
+            if (current.stages) {
+                position = current.position;
+                stages = current.stages;
+                removeClass(el, stages[position]);
+                removeClass(el, stages[position] + "-active");
+            }
+            if (current.deferred) {
+                current.deferred.reject(current.el);
+            }
         }
     }
     else if (isFunction(queue)) {

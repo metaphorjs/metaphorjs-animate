@@ -12,7 +12,8 @@ var getAnimationPrefixes    = require("func/getAnimationPrefixes.js"),
     isString                = require("../../metaphorjs/src/func/isString.js"),
     isFunction              = require("../../metaphorjs/src/func/isFunction.js"),
     isPlainObject           = require("../../metaphorjs/src/func/isPlainObject.js"),
-    isNull                  = require('../../metaphorjs/src/func/isNull.js');
+    isNull                  = require('../../metaphorjs/src/func/isNull.js'),
+    getElemRect             = require("../../metaphorjs/src/func/dom/getElemRect.js");
 
 
 module.exports = function(){
@@ -27,7 +28,9 @@ module.exports = function(){
 
         animId          = 0,
 
-        cssAnimations   = !!getAnimationPrefixes(),
+        prefixes        = getAnimationPrefixes(),
+
+        cssAnimations   = !!prefixes,
 
         animFrame       = window.requestAnimationFrame ? window.requestAnimationFrame : function(cb) {
             setTimeout(cb, 0);
@@ -55,14 +58,15 @@ module.exports = function(){
                 next;
             if (queue.length) {
                 next = queue[0];
-                animationStage(next.el, next.stages, 0, next.start, next.deferred, false, next.id);
+                animationStage(next.el, next.stages, 0, next.start, next.deferred, false, next.id, next.step);
             }
             else {
                 data(el, dataParam, null);
             }
         },
 
-        animationStage  = function animationStage(el, stages, position, startCallback, deferred, first, id) {
+        animationStage  = function animationStage(el, stages, position, startCallback,
+                                                  deferred, first, id, stepCallback) {
 
             var stopped   = function() {
                 var q = data(el, dataParam);
@@ -90,7 +94,7 @@ module.exports = function(){
                 }
                 else {
                     data(el, dataParam)[0].position = position;
-                    animationStage(el, stages, position, null, deferred);
+                    animationStage(el, stages, position, null, deferred, false, id, stepCallback);
                 }
 
                 removeClass(el, stages[thisPosition]);
@@ -104,6 +108,8 @@ module.exports = function(){
                 }
 
                 addClass(el, stages[position] + "-active");
+
+                stepCallback && stepCallback(el, position, "active");
 
                 var duration = getAnimationDuration(el);
 
@@ -123,6 +129,8 @@ module.exports = function(){
 
                 addClass(el, stages[position]);
 
+                stepCallback && stepCallback(el, position, "start");
+
                 var promise;
 
                 if (startCallback) {
@@ -138,11 +146,13 @@ module.exports = function(){
                 }
             };
 
+
+
             first ? animFrame(start) : start();
         };
 
 
-    var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace) {
+    var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
 
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
@@ -202,6 +212,7 @@ module.exports = function(){
                     el: el,
                     stages: stages,
                     start: startCallback,
+                    step: stepCallback,
                     deferred: deferred,
                     position: 0,
                     id: id
@@ -209,7 +220,7 @@ module.exports = function(){
                 data(el, dataParam, queue);
 
                 if (queue.length == 1) {
-                    animationStage(el, stages, 0, startCallback, deferred, true, id);
+                    animationStage(el, stages, 0, startCallback, deferred, true, id, stepCallback);
                 }
 
                 return deferred;
@@ -281,6 +292,8 @@ module.exports = function(){
     };
 
     animate.stop = stopAnimation;
+    animate.prefixes = prefixes;
+    animate.cssAnimations = cssAnimations;
 
     return animate;
 }();

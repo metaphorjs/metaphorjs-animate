@@ -258,7 +258,7 @@ var varType = function(){
         }
 
         if (num == 1 && isNaN(val)) {
-            num = 8;
+            return 8;
         }
 
         return num;
@@ -272,7 +272,7 @@ var varType = function(){
  * @returns {boolean}
  */
 var isArray = function(value) {
-    return varType(value) === 5;
+    return typeof value == "object" && varType(value) === 5;
 };
 
 
@@ -311,7 +311,11 @@ var stopAnimation = function(el) {
 
 
 var isObject = function(value) {
-    return value !== null && typeof value == "object" && varType(value) > 2;
+    if (value === null || typeof value != "object") {
+        return false;
+    }
+    var vt = varType(value);
+    return vt > 2 || vt == -1;
 };
 
 
@@ -333,12 +337,13 @@ var slice = Array.prototype.slice;
 
 
 var isPlainObject = function(value) {
-    return varType(value) === 3;
+    // IE < 9 returns [object Object] from toString(htmlElement)
+    return typeof value == "object" && varType(value) === 3 && !value.nodeType;
 };
 
 
 var isBool = function(value) {
-    return varType(value) === 2;
+    return value === true || value === false;
 };
 var isNull = function(value) {
     return value === null;
@@ -353,61 +358,64 @@ var isNull = function(value) {
  * @param {boolean} deep = false
  * @returns {*}
  */
-var extend = function extend() {
+var extend = function(){
+
+    var extend = function extend() {
 
 
-    var override    = false,
-        deep        = false,
-        args        = slice.call(arguments),
-        dst         = args.shift(),
-        src,
-        k,
-        value;
+        var override    = false,
+            deep        = false,
+            args        = slice.call(arguments),
+            dst         = args.shift(),
+            src,
+            k,
+            value;
 
-    if (isBool(args[args.length - 1])) {
-        override    = args.pop();
-    }
-    if (isBool(args[args.length - 1])) {
-        deep        = override;
-        override    = args.pop();
-    }
+        if (isBool(args[args.length - 1])) {
+            override    = args.pop();
+        }
+        if (isBool(args[args.length - 1])) {
+            deep        = override;
+            override    = args.pop();
+        }
 
-    while (args.length) {
-        if (src = args.shift()) {
-            for (k in src) {
+        while (args.length) {
+            if (src = args.shift()) {
+                for (k in src) {
 
-                if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
+                    if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
 
-                    if (deep) {
-                        if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
-                            extend(dst[k], value, override, deep);
-                        }
-                        else {
-                            if (override === true || dst[k] == undf) { // == checks for null and undefined
-                                if (isPlainObject(value)) {
-                                    dst[k] = {};
-                                    extend(dst[k], value, override, true);
-                                }
-                                else {
-                                    dst[k] = value;
+                        if (deep) {
+                            if (dst[k] && isPlainObject(dst[k]) && isPlainObject(value)) {
+                                extend(dst[k], value, override, deep);
+                            }
+                            else {
+                                if (override === true || dst[k] == undf) { // == checks for null and undefined
+                                    if (isPlainObject(value)) {
+                                        dst[k] = {};
+                                        extend(dst[k], value, override, true);
+                                    }
+                                    else {
+                                        dst[k] = value;
+                                    }
                                 }
                             }
                         }
-                    }
-                    else {
-                        if (override === true || dst[k] == undf) {
-                            dst[k] = value;
+                        else {
+                            if (override === true || dst[k] == undf) {
+                                dst[k] = value;
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    return dst;
-};
+        return dst;
+    };
 
-
+    return extend;
+}();
 
 
 /**
@@ -432,7 +440,7 @@ var addClass = function(el, cls) {
 
 
 var isString = function(value) {
-    return varType(value) === 0;
+    return typeof value == "string" || varType(value) === 0;
 };
 
 
@@ -538,7 +546,24 @@ var getElemRect = function(el) {
     };
 
     return rect;
+};/**
+ * @param {Function} fn
+ * @param {Object} context
+ * @param {[]} args
+ */
+var async = function(fn, context, args) {
+    setTimeout(function(){
+        fn.apply(context, args || []);
+    }, 0);
 };
+var strUndef = "undefined";
+
+
+var animFrame = function(){
+
+    return typeof window != strUndef && window.requestAnimationFrame ?
+           window.requestAnimationFrame : async;
+}();
 
 
 
@@ -557,10 +582,6 @@ module.exports = function(){
         prefixes        = getAnimationPrefixes(),
 
         cssAnimations   = !!prefixes,
-
-        animFrame       = window.requestAnimationFrame ? window.requestAnimationFrame : function(cb) {
-            setTimeout(cb, 0);
-        },
 
         dataParam       = "mjsAnimationQueue",
 
@@ -629,46 +650,42 @@ module.exports = function(){
 
             var setStage = function() {
 
-                if (stopped()) {
-                    return;
+                if (!stopped()) {
+                    addClass(el, stages[position] + "-active");
+
+                    Promise.resolve(stepCallback && stepCallback(el, position, "active"))
+                        .done(function(){
+                            if (!stopped()) {
+
+                                var duration = getAnimationDuration(el);
+
+                                if (duration) {
+                                    callTimeout(finishStage, (new Date).getTime(), duration);
+                                }
+                                else {
+                                    animFrame(finishStage);
+                                    //finishStage();
+                                }
+                            }
+                        });
                 }
 
-                addClass(el, stages[position] + "-active");
-
-                stepCallback && stepCallback(el, position, "active");
-
-                var duration = getAnimationDuration(el);
-
-                if (duration) {
-                    callTimeout(finishStage, (new Date).getTime(), duration);
-                }
-                else {
-                    finishStage();
-                }
             };
 
             var start = function(){
 
-                if (stopped()) {
-                    return;
-                }
+                if (!stopped()) {
+                    addClass(el, stages[position]);
 
-                addClass(el, stages[position]);
-
-                stepCallback && stepCallback(el, position, "start");
-
-                var promise;
-
-                if (startCallback) {
-                    promise = startCallback(el);
-                    startCallback = null;
-                }
-
-                if (isThenable(promise)) {
-                    promise.done(setStage);
-                }
-                else {
-                    animFrame(setStage);
+                    Promise.waterfall([
+                            stepCallback && stepCallback(el, position, "start"),
+                            function(){
+                                return startCallback ? startCallback(el) : null;
+                            }
+                        ])
+                        .done(function(){
+                            !stopped() && animFrame(setStage);
+                        });
                 }
             };
 

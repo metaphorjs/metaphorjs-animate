@@ -13,7 +13,8 @@ var getAnimationPrefixes    = require("func/getAnimationPrefixes.js"),
     isFunction              = require("../../metaphorjs/src/func/isFunction.js"),
     isPlainObject           = require("../../metaphorjs/src/func/isPlainObject.js"),
     isNull                  = require('../../metaphorjs/src/func/isNull.js'),
-    getElemRect             = require("../../metaphorjs/src/func/dom/getElemRect.js");
+    getElemRect             = require("../../metaphorjs/src/func/dom/getElemRect.js"),
+    animFrame               = require("./func/animFrame.js");
 
 
 module.exports = function(){
@@ -31,10 +32,6 @@ module.exports = function(){
         prefixes        = getAnimationPrefixes(),
 
         cssAnimations   = !!prefixes,
-
-        animFrame       = window.requestAnimationFrame ? window.requestAnimationFrame : function(cb) {
-            setTimeout(cb, 0);
-        },
 
         dataParam       = "mjsAnimationQueue",
 
@@ -103,46 +100,42 @@ module.exports = function(){
 
             var setStage = function() {
 
-                if (stopped()) {
-                    return;
+                if (!stopped()) {
+                    addClass(el, stages[position] + "-active");
+
+                    Promise.resolve(stepCallback && stepCallback(el, position, "active"))
+                        .done(function(){
+                            if (!stopped()) {
+
+                                var duration = getAnimationDuration(el);
+
+                                if (duration) {
+                                    callTimeout(finishStage, (new Date).getTime(), duration);
+                                }
+                                else {
+                                    animFrame(finishStage);
+                                    //finishStage();
+                                }
+                            }
+                        });
                 }
 
-                addClass(el, stages[position] + "-active");
-
-                stepCallback && stepCallback(el, position, "active");
-
-                var duration = getAnimationDuration(el);
-
-                if (duration) {
-                    callTimeout(finishStage, (new Date).getTime(), duration);
-                }
-                else {
-                    finishStage();
-                }
             };
 
             var start = function(){
 
-                if (stopped()) {
-                    return;
-                }
+                if (!stopped()) {
+                    addClass(el, stages[position]);
 
-                addClass(el, stages[position]);
-
-                stepCallback && stepCallback(el, position, "start");
-
-                var promise;
-
-                if (startCallback) {
-                    promise = startCallback(el);
-                    startCallback = null;
-                }
-
-                if (isThenable(promise)) {
-                    promise.done(setStage);
-                }
-                else {
-                    animFrame(setStage);
+                    Promise.waterfall([
+                            stepCallback && stepCallback(el, position, "start"),
+                            function(){
+                                return startCallback ? startCallback(el) : null;
+                            }
+                        ])
+                        .done(function(){
+                            !stopped() && animFrame(setStage);
+                        });
                 }
             };
 

@@ -14,7 +14,8 @@ var getAnimationPrefixes    = require("func/getAnimationPrefixes.js"),
     isPlainObject           = require("../../metaphorjs/src/func/isPlainObject.js"),
     isNull                  = require('../../metaphorjs/src/func/isNull.js'),
     getElemRect             = require("../../metaphorjs/src/func/dom/getElemRect.js"),
-    animFrame               = require("./func/animFrame.js");
+    attr                    = require("../../metaphorjs/src/func/dom/attr.js"),
+    raf                     = require("./func/raf.js");
 
 
 module.exports = function(){
@@ -42,10 +43,10 @@ module.exports = function(){
                     fn();
                 }
                 else {
-                    animFrame(tick);
+                    raf(tick);
                 }
             };
-            animFrame(tick);
+            raf(tick);
         },
 
 
@@ -113,7 +114,7 @@ module.exports = function(){
                                     callTimeout(finishStage, (new Date).getTime(), duration);
                                 }
                                 else {
-                                    animFrame(finishStage);
+                                    raf(finishStage);
                                     //finishStage();
                                 }
                             }
@@ -134,14 +135,14 @@ module.exports = function(){
                             }
                         ])
                         .done(function(){
-                            !stopped() && animFrame(setStage);
+                            !stopped() && raf(setStage);
                         });
                 }
             };
 
 
 
-            first ? animFrame(start) : start();
+            first ? raf(start) : start();
         };
 
 
@@ -150,16 +151,16 @@ module.exports = function(){
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attr        = el.getAttribute("mjs-animate"),
+            attrValue   = attr(el, "mjs-animate"),
             stages,
             jsFn,
             before, after,
             options, context,
             duration;
 
-        animation       = animation || attr;
+        animation       = animation || attrValue;
 
-        if (checkIfEnabled && isNull(attr)) {
+        if (checkIfEnabled && isNull(attrValue)) {
             animation   = null;
         }
 

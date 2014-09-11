@@ -444,52 +444,52 @@ var isString = function(value) {
 };
 
 
-var getScrollTop = function() {
-    if(window.pageYOffset !== undf) {
+var getScrollTopOrLeft = function(vertical) {
+
+    var defaultST,
+        wProp = vertical ? "pageYOffset" : "pageXOffset",
+        sProp = vertical ? "scrollTop" : "scrollLeft",
+        doc = document,
+        body = doc.body,
+        html = doc.documentElement;
+
+    if(window[wProp] !== undf) {
         //most browsers except IE before #9
-        return function(){
-            return window.pageYOffset;
+        defaultST = function(){
+            return window[wProp];
         };
     }
     else{
-        var B = document.body; //IE 'quirks'
-        var D = document.documentElement; //IE with doctype
-        if (D.clientHeight) {
-            return function() {
-                return D.scrollTop;
+        if (html.clientHeight) {
+            defaultST = function() {
+                return html[sProp];
             };
         }
         else {
-            return function() {
-                return B.scrollTop;
+            defaultST = function() {
+                return body[sProp];
             };
         }
     }
-}();
 
+    return function(node) {
+        if (node && node.nodeType == 1 &&
+            node !== body && node !== html) {
 
-var getScrollLeft = function() {
-    if(window.pageXOffset !== undf) {
-        //most browsers except IE before #9
-        return function(){
-            return window.pageXOffset;
-        };
-    }
-    else{
-        var B = document.body; //IE 'quirks'
-        var D = document.documentElement; //IE with doctype
-        if (D.clientWidth) {
-            return function() {
-                return D.scrollLeft;
-            };
+            return node[sProp];
         }
         else {
-            return function() {
-                return B.scrollLeft;
-            };
+            return defaultST();
         }
     }
-}();
+
+};
+
+
+var getScrollTop = getScrollTopOrLeft(true);
+
+
+var getScrollLeft = getScrollTopOrLeft(false);
 
 
 var getElemRect = function(el) {
@@ -546,23 +546,57 @@ var getElemRect = function(el) {
     };
 
     return rect;
-};/**
- * @param {Function} fn
- * @param {Object} context
- * @param {[]} args
- */
-var async = function(fn, context, args) {
-    setTimeout(function(){
-        fn.apply(context, args || []);
-    }, 0);
+};
+
+
+var attr = function(el, name, value) {
+    if (!el || !el.getAttribute) {
+        return null;
+    }
+    if (value === undf) {
+        return el.getAttribute(name);
+    }
+    else if (value === null) {
+        return el.removeAttribute(name);
+    }
+    else {
+        return el.setAttribute(name, value);
+    }
 };
 var strUndef = "undefined";
 
 
-var animFrame = function(){
+var raf = function() {
 
-    return typeof window != strUndef && window.requestAnimationFrame ?
-           window.requestAnimationFrame : async;
+    var raf,
+        cancel;
+
+    if (typeof window != strUndef) {
+        var w   = window;
+        raf     = w.requestAnimationFrame ||
+                    w.webkitRequestAnimationFrame ||
+                    w.mozRequestAnimationFrame;
+        cancel  = w.cancelAnimationFrame ||
+                    w.webkitCancelAnimationFrame ||
+                    w.mozCancelAnimationFrame ||
+                    w.webkitCancelRequestAnimationFrame;
+
+        if (raf) {
+            return function(fn) {
+                var id = raf(fn);
+                return function() {
+                    cancel(id);
+                };
+            };
+        }
+    }
+
+    return function(fn) {
+        var id = setTimeout(fn, 0);
+        return function() {
+            clearTimeout(id);
+        }
+    };
 }();
 
 
@@ -592,10 +626,10 @@ module.exports = function(){
                     fn();
                 }
                 else {
-                    animFrame(tick);
+                    raf(tick);
                 }
             };
-            animFrame(tick);
+            raf(tick);
         },
 
 
@@ -663,7 +697,7 @@ module.exports = function(){
                                     callTimeout(finishStage, (new Date).getTime(), duration);
                                 }
                                 else {
-                                    animFrame(finishStage);
+                                    raf(finishStage);
                                     //finishStage();
                                 }
                             }
@@ -684,14 +718,14 @@ module.exports = function(){
                             }
                         ])
                         .done(function(){
-                            !stopped() && animFrame(setStage);
+                            !stopped() && raf(setStage);
                         });
                 }
             };
 
 
 
-            first ? animFrame(start) : start();
+            first ? raf(start) : start();
         };
 
 
@@ -700,16 +734,16 @@ module.exports = function(){
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attr        = el.getAttribute("mjs-animate"),
+            attrValue   = attr(el, "mjs-animate"),
             stages,
             jsFn,
             before, after,
             options, context,
             duration;
 
-        animation       = animation || attr;
+        animation       = animation || attrValue;
 
-        if (checkIfEnabled && isNull(attr)) {
+        if (checkIfEnabled && isNull(attrValue)) {
             animation   = null;
         }
 

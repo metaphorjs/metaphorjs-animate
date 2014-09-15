@@ -9,6 +9,7 @@ module.exports = function(){
         transitionDelay     = "transitionDelay",
         transitionDuration  = "transitionDuration",
         transform           = "transform",
+        transitionend       = null,
         prefixes            = null,
 
 
@@ -37,6 +38,17 @@ module.exports = function(){
                 }
             }
 
+            if (animation) {
+                if('ontransitionend' in window) {
+                    // Chrome/Saf (+ Mobile Saf)/Android
+                    transitionend = 'transitionend';
+                }
+                else if('onwebkittransitionend' in window) {
+                    // Chrome/Saf (+ Mobile Saf)/Android
+                    transitionend = 'webkitTransitionEnd';
+                }
+            }
+
             return animation;
         };
 
@@ -46,7 +58,8 @@ module.exports = function(){
             animationDuration: animationDuration,
             transitionDelay: transitionDelay,
             transitionDuration: transitionDuration,
-            transform: transform
+            transform: transform,
+            transitionend: transitionend
         };
     }
 

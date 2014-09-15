@@ -18,6 +18,7 @@ var getAnimationPrefixes = function(){
         transitionDelay     = "transitionDelay",
         transitionDuration  = "transitionDuration",
         transform           = "transform",
+        transitionend       = null,
         prefixes            = null,
 
 
@@ -46,6 +47,17 @@ var getAnimationPrefixes = function(){
                 }
             }
 
+            if (animation) {
+                if('ontransitionend' in window) {
+                    // Chrome/Saf (+ Mobile Saf)/Android
+                    transitionend = 'transitionend';
+                }
+                else if('onwebkittransitionend' in window) {
+                    // Chrome/Saf (+ Mobile Saf)/Android
+                    transitionend = 'webkitTransitionEnd';
+                }
+            }
+
             return animation;
         };
 
@@ -55,7 +67,8 @@ var getAnimationPrefixes = function(){
             animationDuration: animationDuration,
             transitionDelay: transitionDelay,
             transitionDuration: transitionDuration,
-            transform: transform
+            transform: transform,
+            transitionend: transitionend
         };
     }
 
@@ -152,11 +165,7 @@ var nextUid = function(){
 
 
 
-/**
- * @param {Element} el
- * @param {String} key
- * @param {*} value optional
- */
+
 var data = function(){
 
     var dataCache   = {},
@@ -165,6 +174,11 @@ var data = function(){
             return el._mjsid || (el._mjsid = nextUid());
         };
 
+    /**
+     * @param {Element} el
+     * @param {String} key
+     * @param {*} value optional
+     */
     return function(el, key, value) {
         var id  = getNodeId(el),
             obj = dataCache[id];
@@ -317,23 +331,18 @@ var stopAnimation = function(el) {
 
 
 
-var isObject = function(value) {
-    if (value === null || typeof value != "object") {
-        return false;
-    }
-    var vt = varType(value);
-    return vt > 2 || vt == -1;
-};
-
-
 /**
  * Returns 'then' function or false
  * @param {*} any
  * @returns {Function|boolean}
  */
 var isThenable = function(any) {
-    var then;
-    if (!any || (!isObject(any) && !isFunction(any))) {
+    if (!any || !any.then) {
+        return false;
+    }
+    var then, t;
+    //if (!any || (!isObject(any) && !isFunction(any))) {
+    if (((t = typeof any) != "object" && t != "function")) {
         return false;
     }
     return isFunction((then = any.then)) ?
@@ -442,11 +451,12 @@ var strUndef = "undefined";/**
  * @param {Function} fn
  * @param {Object} context
  * @param {[]} args
+ * @param {number} timeout
  */
-var async = function(fn, context, args) {
+var async = function(fn, context, args, timeout) {
     setTimeout(function(){
         fn.apply(context, args || []);
-    }, 0);
+    }, timeout || 0);
 };
 
 
@@ -857,7 +867,12 @@ var Promise = function(){
                 state   = self._state;
 
             if (state == FULFILLED && self._wait == 0) {
-                fn.call(fnScope || null, self._value);
+                try {
+                    fn.call(fnScope || null, self._value);
+                }
+                catch (thrown) {
+                    error(thrown);
+                }
             }
             else if (state == PENDING) {
                 self._dones.push([fn, fnScope]);
@@ -893,7 +908,12 @@ var Promise = function(){
                 state   = self._state;
 
             if (state == REJECTED && self._wait == 0) {
-                fn.call(fnScope || null, self._reason);
+                try {
+                    fn.call(fnScope || null, self._reason);
+                }
+                catch (thrown) {
+                    error(thrown);
+                }
             }
             else if (state == PENDING) {
                 self._fails.push([fn, fnScope]);
@@ -1199,128 +1219,11 @@ var addClass = function(el, cls) {
 
 
 var isString = function(value) {
-    return typeof value == "string" || varType(value) === 0;
+    return typeof value == "string" || value === ""+value;
+    //return typeof value == "string" || varType(value) === 0;
 };
-
-
-var getScrollTopOrLeft = function(vertical) {
-
-    var defaultST,
-        wProp = vertical ? "pageYOffset" : "pageXOffset",
-        sProp = vertical ? "scrollTop" : "scrollLeft",
-        doc = document,
-        body = doc.body,
-        html = doc.documentElement;
-
-    if(window[wProp] !== undf) {
-        //most browsers except IE before #9
-        defaultST = function(){
-            return window[wProp];
-        };
-    }
-    else{
-        if (html.clientHeight) {
-            defaultST = function() {
-                return html[sProp];
-            };
-        }
-        else {
-            defaultST = function() {
-                return body[sProp];
-            };
-        }
-    }
-
-    return function(node) {
-        if (node && node.nodeType == 1 &&
-            node !== body && node !== html) {
-
-            return node[sProp];
-        }
-        else {
-            return defaultST();
-        }
-    }
-
-};
-
-
-var getScrollTop = getScrollTopOrLeft(true);
-
-
-var getScrollLeft = getScrollTopOrLeft(false);
-
-
-var getElemRect = function(el) {
-
-    var rect,
-        st = getScrollTop(),
-        sl = getScrollLeft(),
-        bcr;
-
-    if (el === window) {
-
-        var doc = document.documentElement;
-
-        rect = {
-            left: 0,
-            right: doc.clientWidth,
-            top: st,
-            bottom: doc.clientHeight + st,
-            width: doc.clientWidth,
-            height: doc.clientHeight
-        };
-    }
-    else {
-        if (el.getBoundingClientRect) {
-            bcr = el.getBoundingClientRect();
-            rect = {
-                left: bcr.left + sl,
-                top: bcr.top + st,
-                right: bcr.right + sl,
-                bottom: bcr.bottom + st
-            };
-
-            rect.width = rect.right - rect.left;
-            rect.height = rect.bottom - rect.top;
-        }
-        else {
-            rect = {
-                left: el.offsetLeft + sl,
-                top: el.offsetTop + st,
-                width: el.offsetWidth,
-                height: el.offsetHeight,
-                right: 0,
-                bottom: 0
-            };
-        }
-    }
-
-    rect.getCenter = function() {
-        return this.width / 2;
-    };
-
-    rect.getCenterX = function() {
-        return this.left + this.width / 2;
-    };
-
-    return rect;
-};
-
-
-var attr = function(el, name, value) {
-    if (!el || !el.getAttribute) {
-        return null;
-    }
-    if (value === undf) {
-        return el.getAttribute(name);
-    }
-    else if (value === null) {
-        return el.removeAttribute(name);
-    }
-    else {
-        return el.setAttribute(name, value);
-    }
+var getAttr = function(el, name) {
+    return el.getAttribute(name);
 };
 
 
@@ -1356,10 +1259,26 @@ var raf = function() {
         }
     };
 }();
+var addListener = function(el, event, func) {
+    if (el.attachEvent) {
+        el.attachEvent('on' + event, func);
+    } else {
+        el.addEventListener(event, func, false);
+    }
+};
+
+var removeListener = function(el, event, func) {
+    if (el.detachEvent) {
+        el.detachEvent('on' + event, func);
+    } else {
+        el.removeEventListener(event, func, false);
+    }
+};
 
 
 
 var animate = function(){
+
 
     var types           = {
             "show":     ["mjs-show"],
@@ -1418,6 +1337,10 @@ var animate = function(){
 
             var finishStage = function() {
 
+                if (prefixes.transitionend) {
+                    removeListener(el, prefixes.transitionend, finishStage);
+                }
+
                 if (stopped()) {
                     return;
                 }
@@ -1452,11 +1375,15 @@ var animate = function(){
                                 var duration = getAnimationDuration(el);
 
                                 if (duration) {
-                                    callTimeout(finishStage, (new Date).getTime(), duration);
+                                    if (prefixes.transitionend) {
+                                        addListener(el, prefixes.transitionend, finishStage);
+                                    }
+                                    else {
+                                        callTimeout(finishStage, (new Date).getTime(), duration);
+                                    }
                                 }
                                 else {
                                     raf(finishStage);
-                                    //finishStage();
                                 }
                             }
                         });
@@ -1492,7 +1419,7 @@ var animate = function(){
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attrValue   = attr(el, "mjs-animate"),
+            attrValue   = getAttr(el, "mjs-animate"),
             stages,
             jsFn,
             before, after,

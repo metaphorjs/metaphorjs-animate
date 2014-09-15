@@ -13,12 +13,14 @@ var getAnimationPrefixes    = require("func/getAnimationPrefixes.js"),
     isFunction              = require("../../metaphorjs/src/func/isFunction.js"),
     isPlainObject           = require("../../metaphorjs/src/func/isPlainObject.js"),
     isNull                  = require('../../metaphorjs/src/func/isNull.js'),
-    getElemRect             = require("../../metaphorjs/src/func/dom/getElemRect.js"),
-    attr                    = require("../../metaphorjs/src/func/dom/attr.js"),
-    raf                     = require("./func/raf.js");
+    getAttr                 = require("../../metaphorjs/src/func/dom/getAttr.js"),
+    raf                     = require("./func/raf.js"),
+    addListener             = require("../../metaphorjs/src/func/event/addListener.js"),
+    removeListener          = require("../../metaphorjs/src/func/event/removeListener.js");
 
 
 module.exports = function(){
+
 
     var types           = {
             "show":     ["mjs-show"],
@@ -77,6 +79,10 @@ module.exports = function(){
 
             var finishStage = function() {
 
+                if (prefixes.transitionend) {
+                    removeListener(el, prefixes.transitionend, finishStage);
+                }
+
                 if (stopped()) {
                     return;
                 }
@@ -111,11 +117,15 @@ module.exports = function(){
                                 var duration = getAnimationDuration(el);
 
                                 if (duration) {
-                                    callTimeout(finishStage, (new Date).getTime(), duration);
+                                    if (prefixes.transitionend) {
+                                        addListener(el, prefixes.transitionend, finishStage);
+                                    }
+                                    else {
+                                        callTimeout(finishStage, (new Date).getTime(), duration);
+                                    }
                                 }
                                 else {
                                     raf(finishStage);
-                                    //finishStage();
                                 }
                             }
                         });
@@ -151,7 +161,7 @@ module.exports = function(){
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attrValue   = attr(el, "mjs-animate"),
+            attrValue   = getAttr(el, "mjs-animate"),
             stages,
             jsFn,
             before, after,

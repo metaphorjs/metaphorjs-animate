@@ -140,7 +140,7 @@ var nextUid = function(){
     var uid = ['0', '0', '0'];
 
     // from AngularJs
-    return function() {
+    return function nextUid() {
         var index = uid.length;
         var digit;
 
@@ -179,7 +179,7 @@ var data = function(){
      * @param {String} key
      * @param {*} value optional
      */
-    return function(el, key, value) {
+    return function data(el, key, value) {
         var id  = getNodeId(el),
             obj = dataCache[id];
 
@@ -202,7 +202,7 @@ var getRegExp = function(){
 
     var cache = {};
 
-    return function(expr) {
+    return function getRegExp(expr) {
         return cache[expr] || (cache[expr] = new RegExp(expr));
     };
 }();
@@ -212,7 +212,7 @@ var getRegExp = function(){
  * @param {String} cls
  * @returns {RegExp}
  */
-var getClsReg = function(cls) {
+function getClsReg(cls) {
     return getRegExp('(?:^|\\s)'+cls+'(?!\\S)');
 };
 
@@ -221,12 +221,12 @@ var getClsReg = function(cls) {
  * @param {Element} el
  * @param {String} cls
  */
-var removeClass = function(el, cls) {
+function removeClass(el, cls) {
     if (cls) {
         el.className = el.className.replace(getClsReg(cls), '');
     }
 };
-var isFunction = function(value) {
+function isFunction(value) {
     return typeof value == 'function';
 };
 var toString = Object.prototype.toString;
@@ -261,7 +261,7 @@ var varType = function(){
         'date': 10
     */
 
-    return function(val) {
+    return function varType(val) {
 
         if (!val) {
             if (val === null) {
@@ -292,7 +292,7 @@ var varType = function(){
  * @param {*} value
  * @returns {boolean}
  */
-var isArray = function(value) {
+function isArray(value) {
     return typeof value == "object" && varType(value) === 5;
 };
 
@@ -336,7 +336,7 @@ var stopAnimation = function(el) {
  * @param {*} any
  * @returns {Function|boolean}
  */
-var isThenable = function(any) {
+function isThenable(any) {
     if (!any || !any.then) {
         return false;
     }
@@ -352,16 +352,20 @@ var isThenable = function(any) {
 var slice = Array.prototype.slice;
 
 
-var isPlainObject = function(value) {
+function isPlainObject(value) {
     // IE < 9 returns [object Object] from toString(htmlElement)
-    return typeof value == "object" && varType(value) === 3 && !value.nodeType;
+    return typeof value == "object" &&
+           varType(value) === 3 &&
+            !value.nodeType &&
+            value.constructor === Object;
+
 };
 
 
-var isBool = function(value) {
+function isBool(value) {
     return value === true || value === false;
 };
-var isNull = function(value) {
+function isNull(value) {
     return value === null;
 };
 
@@ -453,14 +457,14 @@ var strUndef = "undefined";/**
  * @param {[]} args
  * @param {number} timeout
  */
-var async = function(fn, context, args, timeout) {
+function async(fn, context, args, timeout) {
     setTimeout(function(){
         fn.apply(context, args || []);
     }, timeout || 0);
 };
 
 
-var error = function(e) {
+function error(e) {
 
     var stack = e.stack || (new Error).stack;
 
@@ -476,7 +480,6 @@ var error = function(e) {
         throw e;
     }
 };
-
 
 
 
@@ -607,7 +610,7 @@ var Promise = function(){
         }
     };
 
-    Promise.prototype = {
+    extend(Promise.prototype, {
 
         _state: PENDING,
 
@@ -638,10 +641,10 @@ var Promise = function(){
         _cleanup: function() {
             var self    = this;
 
-            delete self._fulfills;
-            delete self._rejects;
-            delete self._dones;
-            delete self._fails;
+            self._fulfills = null;
+            self._rejects = null;
+            self._dones = null;
+            self._fails = null;
         },
 
         _processValue: function(value, cb) {
@@ -973,7 +976,7 @@ var Promise = function(){
 
             return self;
         }
-    };
+    }, true, false);
 
 
     Promise.fcall = function(fn, context, args) {
@@ -1202,7 +1205,7 @@ var Promise = function(){
  * @param {String} cls
  * @returns {boolean}
  */
-var hasClass = function(el, cls) {
+function hasClass(el, cls) {
     return cls ? getClsReg(cls).test(el.className) : false;
 };
 
@@ -1211,18 +1214,18 @@ var hasClass = function(el, cls) {
  * @param {Element} el
  * @param {String} cls
  */
-var addClass = function(el, cls) {
+function addClass(el, cls) {
     if (cls && !hasClass(el, cls)) {
         el.className += " " + cls;
     }
 };
 
 
-var isString = function(value) {
+function isString(value) {
     return typeof value == "string" || value === ""+value;
     //return typeof value == "string" || varType(value) === 0;
 };
-var getAttr = function(el, name) {
+function getAttr(el, name) {
     return el.getAttribute(name);
 };
 
@@ -1259,7 +1262,7 @@ var raf = function() {
         }
     };
 }();
-var addListener = function(el, event, func) {
+function addListener(el, event, func) {
     if (el.attachEvent) {
         el.attachEvent('on' + event, func);
     } else {
@@ -1267,7 +1270,7 @@ var addListener = function(el, event, func) {
     }
 };
 
-var removeListener = function(el, event, func) {
+function removeListener(el, event, func) {
     if (el.detachEvent) {
         el.detachEvent('on' + event, func);
     } else {
@@ -1337,9 +1340,9 @@ var animate = function(){
 
             var finishStage = function() {
 
-                if (prefixes.transitionend) {
-                    removeListener(el, prefixes.transitionend, finishStage);
-                }
+                //if (prefixes.transitionend) {
+                //    removeListener(el, prefixes.transitionend, finishStage);
+                //}
 
                 if (stopped()) {
                     return;
@@ -1375,12 +1378,15 @@ var animate = function(){
                                 var duration = getAnimationDuration(el);
 
                                 if (duration) {
-                                    if (prefixes.transitionend) {
-                                        addListener(el, prefixes.transitionend, finishStage);
-                                    }
-                                    else {
+                                    // i don't understand how transitionend works.
+                                    // it just doesn't fire sometimes! :(
+
+                                    //if (prefixes.transitionend) {
+                                    //    addListener(el, prefixes.transitionend, finishStage);
+                                    //}
+                                    //else {
                                         callTimeout(finishStage, (new Date).getTime(), duration);
-                                    }
+                                    //}
                                 }
                                 else {
                                     raf(finishStage);

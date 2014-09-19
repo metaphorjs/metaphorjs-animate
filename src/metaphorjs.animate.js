@@ -79,9 +79,9 @@ module.exports = function(){
 
             var finishStage = function() {
 
-                if (prefixes.transitionend) {
-                    removeListener(el, prefixes.transitionend, finishStage);
-                }
+                //if (prefixes.transitionend) {
+                //    removeListener(el, prefixes.transitionend, finishStage);
+                //}
 
                 if (stopped()) {
                     return;
@@ -117,12 +117,15 @@ module.exports = function(){
                                 var duration = getAnimationDuration(el);
 
                                 if (duration) {
-                                    if (prefixes.transitionend) {
-                                        addListener(el, prefixes.transitionend, finishStage);
-                                    }
-                                    else {
+                                    // i don't understand how transitionend works.
+                                    // it just doesn't fire sometimes! :(
+
+                                    //if (prefixes.transitionend) {
+                                    //    addListener(el, prefixes.transitionend, finishStage);
+                                    //}
+                                    //else {
                                         callTimeout(finishStage, (new Date).getTime(), duration);
-                                    }
+                                    //}
                                 }
                                 else {
                                     raf(finishStage);

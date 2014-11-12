@@ -1,21 +1,21 @@
 {
     "name": "metaphorjs-animate",
     "version": "0.1.6",
-    "description": "",
+    "description": "MetaphorJs animation engine",
     "main": "dist/metaphorjs.animate.npm.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/kuindji/metaphorjs-animate.git"
+        "url": "https://github.com/metaphorjs/metaphorjs-animate.git"
     },
     "author": "kuindji",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/kuindji/metaphorjs-animate/issues"
+        "url": "https://github.com/metaphorjs/metaphorjs-animate/issues"
     },
-    "homepage": "https://github.com/kuindji/metaphorjs-animate",
+    "homepage": "https://github.com/metaphorjs/metaphorjs-animate",
     "dependencies": {
         "metaphorjs-promise": "*"
     }

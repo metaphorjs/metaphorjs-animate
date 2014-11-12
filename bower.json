@@ -13,7 +13,7 @@
         "animation"
     ],
     "license": "MIT",
-    "homepage": "https://github.com/kuindji/metaphorjs-animate",
+    "homepage": "https://github.com/metaphorjs/metaphorjs-animate",
     "ignore": [
         "node_modules",
         "bower_components",

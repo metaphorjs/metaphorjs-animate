@@ -1,5 +1,7 @@
 {
     "version": "0.1.6",
+    "description": "MetaphorJs animation engine",
+
     "push": [
         "github"
     ],

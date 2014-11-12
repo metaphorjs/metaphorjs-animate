@@ -2,7 +2,10 @@
 "use strict";
 
 
+var MetaphorJs = {
 
+
+};
 
 
 var undf = undefined;

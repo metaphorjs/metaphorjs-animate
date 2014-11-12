@@ -4,6 +4,10 @@ var data = require("../../../metaphorjs/src/func/dom/data.js"),
     isFunction = require("../../../metaphorjs/src/func/isFunction.js"),
     isArray = require("../../../metaphorjs/src/func/isArray.js");
 
+/**
+ * @function animate.stop
+ * @param {Element} el
+ */
 module.exports = function(el) {
 
     var queue = data(el, "mjsAnimationQueue"),

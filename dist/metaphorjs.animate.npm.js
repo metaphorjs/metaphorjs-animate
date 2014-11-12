@@ -1,6 +1,9 @@
+module.exports = function (window) {
+"use strict";
 var Promise = require('metaphorjs-promise');
 
 var undf = undefined;
+
 
 
 var getAnimationPrefixes = function(){
@@ -14,10 +17,11 @@ var getAnimationPrefixes = function(){
         transitionend       = null,
         prefixes            = null,
 
+        probed              = false,
 
         detectCssPrefixes   = function() {
 
-            var el = document.createElement("div"),
+            var el = window.document.createElement("div"),
                 animation = false,
                 pfx,
                 i, len;
@@ -54,21 +58,36 @@ var getAnimationPrefixes = function(){
             return animation;
         };
 
-    if (detectCssPrefixes()) {
-        prefixes = {
-            animationDelay: animationDelay,
-            animationDuration: animationDuration,
-            transitionDelay: transitionDelay,
-            transitionDuration: transitionDuration,
-            transform: transform,
-            transitionend: transitionend
-        };
-    }
 
+    /**
+     * @function animate.getPrefixes
+     * @returns {object}
+     */
     return function() {
+
+        if (!probed) {
+            if (detectCssPrefixes()) {
+                prefixes = {
+                    animationDelay: animationDelay,
+                    animationDuration: animationDuration,
+                    transitionDelay: transitionDelay,
+                    transitionDuration: transitionDuration,
+                    transform: transform,
+                    transitionend: transitionend
+                };
+            }
+            else {
+                prefixes = {};
+            }
+
+            probed = true;
+        }
+
+
         return prefixes;
     };
 }();
+
 
 
 var getAnimationDuration = function(){
@@ -96,14 +115,27 @@ var getAnimationDuration = function(){
             return max;
         },
 
-        pfx                 = getAnimationPrefixes(),
-        animationDuration   = pfx ? pfx.animationDuration : null,
-        animationDelay      = pfx ? pfx.animationDelay : null,
-        transitionDuration  = pfx ? pfx.transitionDuration : null,
-        transitionDelay     = pfx ? pfx.transitionDelay : null;
+        pfx                 = false,
+        animationDuration   = null,
+        animationDelay      = null,
+        transitionDuration  = null,
+        transitionDelay     = null;
 
 
+    /**
+     * @function animate.getDuration
+     * @param {Element} el
+     * @returns {number}
+     */
     return function(el) {
+
+        if (pfx === false) {
+            pfx = getAnimationPrefixes();
+            animationDuration = pfx ? pfx.animationDuration : null;
+            animationDelay = pfx ? pfx.animationDelay : null;
+            transitionDuration = pfx ? pfx.transitionDuration : null;
+            transitionDelay = pfx ? pfx.transitionDelay : null;
+        }
 
         if (!pfx) {
             return 0;
@@ -126,13 +158,14 @@ var getAnimationDuration = function(){
 
 
 
-/**
- * @returns {String}
- */
+
 var nextUid = function(){
     var uid = ['0', '0', '0'];
 
     // from AngularJs
+    /**
+     * @returns {String}
+     */
     return function nextUid() {
         var index = uid.length;
         var digit;
@@ -155,6 +188,7 @@ var nextUid = function(){
         return uid.join('');
     };
 }();
+
 
 
 
@@ -188,17 +222,21 @@ var data = function(){
         }
     };
 
-}();/**
- * @param {String} expr
- */
+}();
+
 var getRegExp = function(){
 
     var cache = {};
 
+    /**
+     * @param {String} expr
+     * @returns RegExp
+     */
     return function getRegExp(expr) {
         return cache[expr] || (cache[expr] = new RegExp(expr));
     };
 }();
+
 
 
 /**
@@ -210,6 +248,7 @@ function getClsReg(cls) {
 };
 
 
+
 /**
  * @param {Element} el
  * @param {String} cls
@@ -219,10 +258,13 @@ function removeClass(el, cls) {
         el.className = el.className.replace(getClsReg(cls), '');
     }
 };
+
 function isFunction(value) {
     return typeof value == 'function';
 };
+
 var toString = Object.prototype.toString;
+
 
 
 
@@ -241,19 +283,21 @@ var varType = function(){
 
 
     /**
-        'string': 0,
-        'number': 1,
-        'boolean': 2,
-        'object': 3,
-        'function': 4,
-        'array': 5,
-        'null': 6,
-        'undefined': 7,
-        'NaN': 8,
-        'regexp': 9,
-        'date': 10
-    */
-
+     * 'string': 0,
+     * 'number': 1,
+     * 'boolean': 2,
+     * 'object': 3,
+     * 'function': 4,
+     * 'array': 5,
+     * 'null': 6,
+     * 'undefined': 7,
+     * 'NaN': 8,
+     * 'regexp': 9,
+     * 'date': 10,
+     * unknown: -1
+     * @param {*} value
+     * @returns {number}
+     */
     return function varType(val) {
 
         if (!val) {
@@ -281,6 +325,7 @@ var varType = function(){
 }();
 
 
+
 /**
  * @param {*} value
  * @returns {boolean}
@@ -290,6 +335,11 @@ function isArray(value) {
 };
 
 
+
+/**
+ * @function animate.stop
+ * @param {Element} el
+ */
 var stopAnimation = function(el) {
 
     var queue = data(el, "mjsAnimationQueue"),
@@ -324,16 +374,22 @@ var stopAnimation = function(el) {
 
 
 
+
 /**
  * Returns 'then' function or false
  * @param {*} any
  * @returns {Function|boolean}
  */
 function isThenable(any) {
-    if (!any || !any.then) {
+
+    // any.then must only be accessed once
+    // this is a promise/a+ requirement
+
+    if (!any) { //  || !any.then
         return false;
     }
     var then, t;
+
     //if (!any || (!isObject(any) && !isFunction(any))) {
     if (((t = typeof any) != "object" && t != "function")) {
         return false;
@@ -342,7 +398,9 @@ function isThenable(any) {
            then : false;
 };
 
+
 var slice = Array.prototype.slice;
+
 
 
 function isPlainObject(value) {
@@ -354,25 +412,23 @@ function isPlainObject(value) {
 
 };
 
-
 function isBool(value) {
     return value === true || value === false;
 };
-function isNull(value) {
-    return value === null;
-};
 
 
-/**
- * @param {Object} dst
- * @param {Object} src
- * @param {Object} src2 ... srcN
- * @param {boolean} override = false
- * @param {boolean} deep = false
- * @returns {*}
- */
+
+
 var extend = function(){
 
+    /**
+     * @param {Object} dst
+     * @param {Object} src
+     * @param {Object} src2 ... srcN
+     * @param {boolean} override = false
+     * @param {boolean} deep = false
+     * @returns {object}
+     */
     var extend = function extend() {
 
 
@@ -431,6 +487,7 @@ var extend = function(){
 }();
 
 
+
 /**
  * @param {Element} el
  * @param {String} cls
@@ -439,6 +496,7 @@ var extend = function(){
 function hasClass(el, cls) {
     return cls ? getClsReg(cls).test(el.className) : false;
 };
+
 
 
 /**
@@ -452,14 +510,22 @@ function addClass(el, cls) {
 };
 
 
+
 function isString(value) {
     return typeof value == "string" || value === ""+value;
     //return typeof value == "string" || varType(value) === 0;
 };
-function getAttr(el, name) {
-    return el.getAttribute(name);
+
+function isNull(value) {
+    return value === null;
 };
+
+function getAttr(el, name) {
+    return el.getAttribute ? el.getAttribute(name) : null;
+};
+
 var strUndef = "undefined";
+
 
 
 var raf = function() {
@@ -494,6 +560,7 @@ var raf = function() {
         }
     };
 }();
+
 function addListener(el, event, func) {
     if (el.attachEvent) {
         el.attachEvent('on' + event, func);
@@ -501,6 +568,7 @@ function addListener(el, event, func) {
         el.addEventListener(event, func, false);
     }
 };
+
 
 function removeListener(el, event, func) {
     if (el.detachEvent) {
@@ -512,7 +580,8 @@ function removeListener(el, event, func) {
 
 
 
-module.exports = function(){
+
+var animate = function(){
 
 
     var types           = {
@@ -525,9 +594,8 @@ module.exports = function(){
 
         animId          = 0,
 
-        prefixes        = getAnimationPrefixes(),
-
-        cssAnimations   = !!prefixes,
+        prefixes        = false,
+        cssAnimations   = false,
 
         dataParam       = "mjsAnimationQueue",
 
@@ -542,6 +610,15 @@ module.exports = function(){
                 }
             };
             raf(tick);
+        },
+
+
+        cssAnimSupported= function(){
+            if (prefixes === false) {
+                prefixes        = getAnimationPrefixes();
+                cssAnimations   = !!prefixes;
+            }
+            return cssAnimations;
         },
 
 
@@ -652,6 +729,22 @@ module.exports = function(){
         };
 
 
+    /**
+     * @function animate
+     * @param {Element} el Element being animated
+     * @param {string|function|[]|object} animation {
+     *  'string' - registered animation name,<br>
+     *  'function' - fn(el, callback) - your own animation<br>
+     *  'array' - array or stages (class names)<br>
+     *  'array' - [{before}, {after}] - jquery animation<br>
+     *  'object' - {stages, fn, before, after, options, context, duration, start}
+     * }
+     * @param {function} startCallback call this function before animation begins
+     * @param {bool} checkIfEnabled check if mjs-animate attribute is present
+     * @param {MetaphorJs.Namespace} namespace registered animations storage
+     * @param {function} stepCallback call this function between stages
+     * @returns {MetaphorJs.Promise}
+     */
     var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
 
         var deferred    = new Promise,
@@ -706,7 +799,7 @@ module.exports = function(){
             }
 
 
-            if (cssAnimations && stages) {
+            if (cssAnimSupported() && stages) {
 
                 queue.push({
                     el: el,
@@ -792,8 +885,17 @@ module.exports = function(){
     };
 
     animate.stop = stopAnimation;
-    animate.prefixes = prefixes;
-    animate.cssAnimations = cssAnimations;
+    animate.getPrefixes = getAnimationPrefixes;
+    animate.getDuration = getAnimationDuration;
+
+    /**
+     * @function animate.cssAnimationSupported
+     * @returns {bool}
+     */
+    animate.cssAnimationSupported = cssAnimSupported;
 
     return animate;
 }();
+return animate;
+
+};

@@ -27,8 +27,15 @@ module.exports = function() {
 
     animate.addAnimationType = emptyFn;
     animate.stop = emptyFn;
-    animate.prefixes = {};
-    animate.cssAnimations = false;
+    animate.getPrefixes = function(){
+        return {};
+    };
+    animate.getDuration = function(){
+        return 0;
+    };
+    animate.cssAnimationSupported = function() {
+        return false;
+    };
 
     return animate;
 }();

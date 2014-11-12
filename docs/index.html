@@ -1,0 +1,473 @@
+<!DOCTYPE html><html><head lang="en">
+    <meta charset="UTF-8">
+    <title>MetaphorJs.animate</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/prism/themes/prism.css">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/prism/prism.js"></script>
+</head>
+<body>
+
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MetaphorJs.animate</a>
+        </div>
+
+
+        <div class="navbar-collapse collapse">
+
+            
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Functions
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="#">animate</a>
+                            </li><li>
+                                <a href="#">animate.cssAnimationSupported</a>
+                            </li><li>
+                                <a href="#">animate.getDuration</a>
+                            </li><li>
+                                <a href="#">animate.getPrefixes</a>
+                            </li><li>
+                                <a href="#">animate.stop</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            
+
+            
+        </div><!--/.nav-collapse -->
+
+    </div>
+</div>
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>MetaphorJs.animate</h1>
+        <p></p>
+        <p>v0.1.6</p>
+    </div>
+</div>
+
+<div class="container source-container">
+    <div class="row item-group level-0">
+        
+        <div class="col-md-12 item-group-items item-group-type-function level-0">
+            <div class="item-header" id="animate">
+    
+        
+    
+    <h3>
+        
+        <span class="item-name">animate</span>
+        
+            
+                <span class="item-name-arguments">(el, animation, startCallback, checkIfEnabled, namespace, stepCallback)</span>
+            
+            
+            
+                <span class="item-name-returns">&nbsp;-&gt; MetaphorJs.Promise </span>
+            
+            
+        
+    </h3>
+</div>
+
+
+
+
+
+
+
+    
+    
+    <ul class="item-properties item-properties-param level-0">
+        <li class="item-property item-property-param">
+            <div class="item-header" id="animate/el">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">Element </span>
+        
+        <span class="item-name">el</span>
+        
+    </h4>
+</div>
+
+
+    <div class="item-description">
+        
+            <p>Element being animated</p>
+
+        
+    </div>
+
+
+
+
+
+
+    
+
+        </li><li class="item-property item-property-param">
+            <div class="item-header" id="animate/animation">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">string | function | array | object </span>
+        
+        <span class="item-name">animation</span>
+        
+    </h4>
+</div>
+
+
+    <div class="item-description">
+        
+            <p>'string' - registered animation name,<br>
+'function' - fn(el, callback) - your own animation<br>
+'array' - array or stages (class names)<br>
+'array' - [{before}, {after}] - jquery animation<br>
+'object' - {stages, fn, before, after, options, context, duration, start}</p>
+
+        
+    </div>
+
+
+
+
+
+
+    
+
+        </li><li class="item-property item-property-param">
+            <div class="item-header" id="animate/startCallback">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">function </span>
+        
+        <span class="item-name">startCallback</span>
+        
+            
+            
+                <span class="item-name-arguments">()</span>
+            
+            
+            
+        
+    </h4>
+</div>
+
+
+    <div class="item-description">
+        
+            <p>call this function before animation begins</p>
+
+        
+    </div>
+
+
+
+
+
+
+    
+
+        </li><li class="item-property item-property-param">
+            <div class="item-header" id="animate/checkIfEnabled">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">boolean </span>
+        
+        <span class="item-name">checkIfEnabled</span>
+        
+    </h4>
+</div>
+
+
+    <div class="item-description">
+        
+            <p>check if mjs-animate attribute is present</p>
+
+        
+    </div>
+
+
+
+
+
+
+    
+
+        </li><li class="item-property item-property-param">
+            <div class="item-header" id="animate/namespace">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">MetaphorJs.Namespace </span>
+        
+        <span class="item-name">namespace</span>
+        
+    </h4>
+</div>
+
+
+    <div class="item-description">
+        
+            <p>registered animations storage</p>
+
+        
+    </div>
+
+
+
+
+
+
+    
+
+        </li><li class="item-property item-property-param">
+            <div class="item-header" id="animate/stepCallback">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">function </span>
+        
+        <span class="item-name">stepCallback</span>
+        
+            
+            
+                <span class="item-name-arguments">()</span>
+            
+            
+            
+        
+    </h4>
+</div>
+
+
+    <div class="item-description">
+        
+            <p>call this function between stages</p>
+
+        
+    </div>
+
+
+
+
+
+
+    
+
+        </li>
+    </ul>
+
+
+        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
+            <div class="item-header" id="animate.cssAnimationSupported">
+    
+        
+    
+    <h3>
+        
+        <span class="item-name">animate.cssAnimationSupported</span>
+        
+            
+            
+                <span class="item-name-arguments">()</span>
+            
+            
+                <span class="item-name-returns">&nbsp;-&gt; boolean </span>
+            
+            
+        
+    </h3>
+</div>
+
+
+
+
+
+
+
+    
+
+        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
+            <div class="item-header" id="animate.getDuration">
+    
+        
+    
+    <h3>
+        
+        <span class="item-name">animate.getDuration</span>
+        
+            
+                <span class="item-name-arguments">(el)</span>
+            
+            
+            
+                <span class="item-name-returns">&nbsp;-&gt; number </span>
+            
+            
+        
+    </h3>
+</div>
+
+
+
+
+
+
+
+    
+    
+    <ul class="item-properties item-properties-param level-0">
+        <li class="item-property item-property-param">
+            <div class="item-header" id="animate.getDuration/el">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">Element </span>
+        
+        <span class="item-name">el</span>
+        
+    </h4>
+</div>
+
+
+
+
+
+
+
+    
+
+        </li>
+    </ul>
+
+
+        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
+            <div class="item-header" id="animate.getPrefixes">
+    
+        
+    
+    <h3>
+        
+        <span class="item-name">animate.getPrefixes</span>
+        
+            
+            
+                <span class="item-name-arguments">()</span>
+            
+            
+                <span class="item-name-returns">&nbsp;-&gt; object </span>
+            
+            
+        
+    </h3>
+</div>
+
+
+
+
+
+
+
+    
+
+        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
+            <div class="item-header" id="animate.stop">
+    
+        
+    
+    <h3>
+        
+        <span class="item-name">animate.stop</span>
+        
+            
+                <span class="item-name-arguments">(el)</span>
+            
+            
+            
+            
+        
+    </h3>
+</div>
+
+
+
+
+
+
+
+    
+    
+    <ul class="item-properties item-properties-param level-0">
+        <li class="item-property item-property-param">
+            <div class="item-header" id="animate.stop/el">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">Element </span>
+        
+        <span class="item-name">el</span>
+        
+    </h4>
+</div>
+
+
+
+
+
+
+
+    
+
+        </li>
+    </ul>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="container"></div>
+</div>
+
+
+</body></html>

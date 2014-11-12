@@ -32,9 +32,8 @@ module.exports = function(){
 
         animId          = 0,
 
-        prefixes        = getAnimationPrefixes(),
-
-        cssAnimations   = !!prefixes,
+        prefixes        = false,
+        cssAnimations   = false,
 
         dataParam       = "mjsAnimationQueue",
 
@@ -49,6 +48,15 @@ module.exports = function(){
                 }
             };
             raf(tick);
+        },
+
+
+        cssAnimSupported= function(){
+            if (prefixes === false) {
+                prefixes        = getAnimationPrefixes();
+                cssAnimations   = !!prefixes;
+            }
+            return cssAnimations;
         },
 
 
@@ -159,6 +167,22 @@ module.exports = function(){
         };
 
 
+    /**
+     * @function animate
+     * @param {Element} el Element being animated
+     * @param {string|function|[]|object} animation {
+     *  'string' - registered animation name,<br>
+     *  'function' - fn(el, callback) - your own animation<br>
+     *  'array' - array or stages (class names)<br>
+     *  'array' - [{before}, {after}] - jquery animation<br>
+     *  'object' - {stages, fn, before, after, options, context, duration, start}
+     * }
+     * @param {function} startCallback call this function before animation begins
+     * @param {bool} checkIfEnabled check if mjs-animate attribute is present
+     * @param {MetaphorJs.Namespace} namespace registered animations storage
+     * @param {function} stepCallback call this function between stages
+     * @returns {MetaphorJs.Promise}
+     */
     var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
 
         var deferred    = new Promise,
@@ -213,7 +237,7 @@ module.exports = function(){
             }
 
 
-            if (cssAnimations && stages) {
+            if (cssAnimSupported() && stages) {
 
                 queue.push({
                     el: el,
@@ -299,8 +323,14 @@ module.exports = function(){
     };
 
     animate.stop = stopAnimation;
-    animate.prefixes = prefixes;
-    animate.cssAnimations = cssAnimations;
+    animate.getPrefixes = getAnimationPrefixes;
+    animate.getDuration = getAnimationDuration;
+
+    /**
+     * @function animate.cssAnimationSupported
+     * @returns {bool}
+     */
+    animate.cssAnimationSupported = cssAnimSupported;
 
     return animate;
 }();

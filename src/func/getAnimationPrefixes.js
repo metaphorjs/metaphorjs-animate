@@ -12,10 +12,11 @@ module.exports = function(){
         transitionend       = null,
         prefixes            = null,
 
+        probed              = false,
 
         detectCssPrefixes   = function() {
 
-            var el = document.createElement("div"),
+            var el = window.document.createElement("div"),
                 animation = false,
                 pfx,
                 i, len;
@@ -52,18 +53,32 @@ module.exports = function(){
             return animation;
         };
 
-    if (detectCssPrefixes()) {
-        prefixes = {
-            animationDelay: animationDelay,
-            animationDuration: animationDuration,
-            transitionDelay: transitionDelay,
-            transitionDuration: transitionDuration,
-            transform: transform,
-            transitionend: transitionend
-        };
-    }
 
+    /**
+     * @function animate.getPrefixes
+     * @returns {object}
+     */
     return function() {
+
+        if (!probed) {
+            if (detectCssPrefixes()) {
+                prefixes = {
+                    animationDelay: animationDelay,
+                    animationDuration: animationDuration,
+                    transitionDelay: transitionDelay,
+                    transitionDuration: transitionDuration,
+                    transform: transform,
+                    transitionend: transitionend
+                };
+            }
+            else {
+                prefixes = {};
+            }
+
+            probed = true;
+        }
+
+
         return prefixes;
     };
 }();

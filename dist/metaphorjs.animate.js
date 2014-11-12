@@ -1,13 +1,12 @@
 (function(){
 "use strict";
 
-var MetaphorJs = {
-    lib: {},
-    cmp: {},
-    view: {}
-};
+
+
+
 
 var undf = undefined;
+
 
 
 var getAnimationPrefixes = function(){
@@ -21,10 +20,11 @@ var getAnimationPrefixes = function(){
         transitionend       = null,
         prefixes            = null,
 
+        probed              = false,
 
         detectCssPrefixes   = function() {
 
-            var el = document.createElement("div"),
+            var el = window.document.createElement("div"),
                 animation = false,
                 pfx,
                 i, len;
@@ -61,21 +61,36 @@ var getAnimationPrefixes = function(){
             return animation;
         };
 
-    if (detectCssPrefixes()) {
-        prefixes = {
-            animationDelay: animationDelay,
-            animationDuration: animationDuration,
-            transitionDelay: transitionDelay,
-            transitionDuration: transitionDuration,
-            transform: transform,
-            transitionend: transitionend
-        };
-    }
 
+    /**
+     * @function animate.getPrefixes
+     * @returns {object}
+     */
     return function() {
+
+        if (!probed) {
+            if (detectCssPrefixes()) {
+                prefixes = {
+                    animationDelay: animationDelay,
+                    animationDuration: animationDuration,
+                    transitionDelay: transitionDelay,
+                    transitionDuration: transitionDuration,
+                    transform: transform,
+                    transitionend: transitionend
+                };
+            }
+            else {
+                prefixes = {};
+            }
+
+            probed = true;
+        }
+
+
         return prefixes;
     };
 }();
+
 
 
 var getAnimationDuration = function(){
@@ -103,14 +118,27 @@ var getAnimationDuration = function(){
             return max;
         },
 
-        pfx                 = getAnimationPrefixes(),
-        animationDuration   = pfx ? pfx.animationDuration : null,
-        animationDelay      = pfx ? pfx.animationDelay : null,
-        transitionDuration  = pfx ? pfx.transitionDuration : null,
-        transitionDelay     = pfx ? pfx.transitionDelay : null;
+        pfx                 = false,
+        animationDuration   = null,
+        animationDelay      = null,
+        transitionDuration  = null,
+        transitionDelay     = null;
 
 
+    /**
+     * @function animate.getDuration
+     * @param {Element} el
+     * @returns {number}
+     */
     return function(el) {
+
+        if (pfx === false) {
+            pfx = getAnimationPrefixes();
+            animationDuration = pfx ? pfx.animationDuration : null;
+            animationDelay = pfx ? pfx.animationDelay : null;
+            transitionDuration = pfx ? pfx.transitionDuration : null;
+            transitionDelay = pfx ? pfx.transitionDelay : null;
+        }
 
         if (!pfx) {
             return 0;
@@ -133,13 +161,14 @@ var getAnimationDuration = function(){
 
 
 
-/**
- * @returns {String}
- */
+
 var nextUid = function(){
     var uid = ['0', '0', '0'];
 
     // from AngularJs
+    /**
+     * @returns {String}
+     */
     return function nextUid() {
         var index = uid.length;
         var digit;
@@ -162,6 +191,7 @@ var nextUid = function(){
         return uid.join('');
     };
 }();
+
 
 
 
@@ -195,17 +225,21 @@ var data = function(){
         }
     };
 
-}();/**
- * @param {String} expr
- */
+}();
+
 var getRegExp = function(){
 
     var cache = {};
 
+    /**
+     * @param {String} expr
+     * @returns RegExp
+     */
     return function getRegExp(expr) {
         return cache[expr] || (cache[expr] = new RegExp(expr));
     };
 }();
+
 
 
 /**
@@ -217,6 +251,7 @@ function getClsReg(cls) {
 };
 
 
+
 /**
  * @param {Element} el
  * @param {String} cls
@@ -226,10 +261,13 @@ function removeClass(el, cls) {
         el.className = el.className.replace(getClsReg(cls), '');
     }
 };
+
 function isFunction(value) {
     return typeof value == 'function';
 };
+
 var toString = Object.prototype.toString;
+
 
 
 
@@ -248,19 +286,21 @@ var varType = function(){
 
 
     /**
-        'string': 0,
-        'number': 1,
-        'boolean': 2,
-        'object': 3,
-        'function': 4,
-        'array': 5,
-        'null': 6,
-        'undefined': 7,
-        'NaN': 8,
-        'regexp': 9,
-        'date': 10
-    */
-
+     * 'string': 0,
+     * 'number': 1,
+     * 'boolean': 2,
+     * 'object': 3,
+     * 'function': 4,
+     * 'array': 5,
+     * 'null': 6,
+     * 'undefined': 7,
+     * 'NaN': 8,
+     * 'regexp': 9,
+     * 'date': 10,
+     * unknown: -1
+     * @param {*} value
+     * @returns {number}
+     */
     return function varType(val) {
 
         if (!val) {
@@ -288,6 +328,7 @@ var varType = function(){
 }();
 
 
+
 /**
  * @param {*} value
  * @returns {boolean}
@@ -297,6 +338,11 @@ function isArray(value) {
 };
 
 
+
+/**
+ * @function animate.stop
+ * @param {Element} el
+ */
 var stopAnimation = function(el) {
 
     var queue = data(el, "mjsAnimationQueue"),
@@ -331,16 +377,22 @@ var stopAnimation = function(el) {
 
 
 
+
 /**
  * Returns 'then' function or false
  * @param {*} any
  * @returns {Function|boolean}
  */
 function isThenable(any) {
-    if (!any || !any.then) {
+
+    // any.then must only be accessed once
+    // this is a promise/a+ requirement
+
+    if (!any) { //  || !any.then
         return false;
     }
     var then, t;
+
     //if (!any || (!isObject(any) && !isFunction(any))) {
     if (((t = typeof any) != "object" && t != "function")) {
         return false;
@@ -349,7 +401,9 @@ function isThenable(any) {
            then : false;
 };
 
+
 var slice = Array.prototype.slice;
+
 
 
 function isPlainObject(value) {
@@ -361,25 +415,23 @@ function isPlainObject(value) {
 
 };
 
-
 function isBool(value) {
     return value === true || value === false;
 };
-function isNull(value) {
-    return value === null;
-};
 
 
-/**
- * @param {Object} dst
- * @param {Object} src
- * @param {Object} src2 ... srcN
- * @param {boolean} override = false
- * @param {boolean} deep = false
- * @returns {*}
- */
+
+
 var extend = function(){
 
+    /**
+     * @param {Object} dst
+     * @param {Object} src
+     * @param {Object} src2 ... srcN
+     * @param {boolean} override = false
+     * @param {boolean} deep = false
+     * @returns {object}
+     */
     var extend = function extend() {
 
 
@@ -436,6 +488,7 @@ var extend = function(){
 
     return extend;
 }();
+
 /**
  * @param {Function} fn
  * @param {*} context
@@ -451,7 +504,9 @@ var bind = Function.prototype.bind ?
               };
 
 
-var strUndef = "undefined";/**
+
+var strUndef = "undefined";
+/**
  * @param {Function} fn
  * @param {Object} context
  * @param {[]} args
@@ -462,6 +517,7 @@ function async(fn, context, args, timeout) {
         fn.apply(context, args || []);
     }, timeout || 0);
 };
+
 
 
 function error(e) {
@@ -480,6 +536,7 @@ function error(e) {
         throw e;
     }
 };
+
 
 
 
@@ -522,6 +579,7 @@ var Promise = function(){
          * @param {Function} fn
          * @param {Object} scope
          * @param {[]} args
+         * @ignore
          */
         next        = function(fn, scope, args) {
             args = args || [];
@@ -543,6 +601,7 @@ var Promise = function(){
          * @param {Function} fn
          * @param {Promise} promise
          * @returns {Function}
+         * @ignore
          */
         wrapper     = function(fn, promise) {
             return function(value) {
@@ -557,19 +616,54 @@ var Promise = function(){
 
 
     /**
-     * @param {Function} fn -- function(resolve, reject)
-     * @param {Object} fnScope
+     * @class Promise
+     */
+
+
+    /**
+     * @method Promise
+     * @param {Function} fn {
+     *  @description Function that accepts two parameters: resolve and reject functions.
+     *  @param {function} resolve {
+     *      @param {*} value
+     *  }
+     *  @param {function} reject {
+     *      @param {*} reason
+     *  }
+     * }
+     * @param {Object} context
      * @returns {Promise}
      * @constructor
      */
-    var Promise = function(fn, fnScope) {
+
+    /**
+     * @method Promise
+     * @param {Thenable} thenable
+     * @returns {Promise}
+     * @constructor
+     */
+
+    /**
+     * @method Promise
+     * @param {*} value Value to resolve promise with
+     * @returns {Promise}
+     * @constructor
+     */
+
+
+    /**
+     * @method Promise
+     * @returns {Promise}
+     * @constructor
+     */
+    var Promise = function(fn, context) {
 
         if (fn instanceof Promise) {
             return fn;
         }
 
         if (!(this instanceof Promise)) {
-            return new Promise(fn, fnScope);
+            return new Promise(fn, context);
         }
 
         var self = this,
@@ -596,7 +690,7 @@ var Promise = function(){
             }
             else if (isFunction(fn)) {
                 try {
-                    fn.call(fnScope,
+                    fn.call(context,
                             bind(self.resolve, self),
                             bind(self.reject, self));
                 }
@@ -862,23 +956,23 @@ var Promise = function(){
 
         /**
          * @param {Function} fn -- function to call when promise is resolved
-         * @param {Object} fnScope -- function's "this" object
+         * @param {Object} context -- function's "this" object
          * @returns {Promise} same promise
          */
-        done: function(fn, fnScope) {
+        done: function(fn, context) {
             var self    = this,
                 state   = self._state;
 
             if (state == FULFILLED && self._wait == 0) {
                 try {
-                    fn.call(fnScope || null, self._value);
+                    fn.call(context || null, self._value);
                 }
                 catch (thrown) {
                     error(thrown);
                 }
             }
             else if (state == PENDING) {
-                self._dones.push([fn, fnScope]);
+                self._dones.push([fn, context]);
             }
 
             return self;
@@ -902,24 +996,24 @@ var Promise = function(){
 
         /**
          * @param {Function} fn -- function to call when promise is rejected.
-         * @param {Object} fnScope -- function's "this" object
+         * @param {Object} context -- function's "this" object
          * @returns {Promise} same promise
          */
-        fail: function(fn, fnScope) {
+        fail: function(fn, context) {
 
             var self    = this,
                 state   = self._state;
 
             if (state == REJECTED && self._wait == 0) {
                 try {
-                    fn.call(fnScope || null, self._reason);
+                    fn.call(context || null, self._reason);
                 }
                 catch (thrown) {
                     error(thrown);
                 }
             }
             else if (state == PENDING) {
-                self._fails.push([fn, fnScope]);
+                self._fails.push([fn, context]);
             }
 
             return self;
@@ -927,17 +1021,17 @@ var Promise = function(){
 
         /**
          * @param {Function} fn -- function to call when promise resolved or rejected
-         * @param {Object} fnScope -- function's "this" object
+         * @param {Object} context -- function's "this" object
          * @return {Promise} same promise
          */
-        always: function(fn, fnScope) {
-            this.done(fn, fnScope);
-            this.fail(fn, fnScope);
+        always: function(fn, context) {
+            this.done(fn, context);
+            this.fail(fn, context);
             return this;
         },
 
         /**
-         * @returns {{then: function, done: function, fail: function, always: function}}
+         * @returns {object} then: function, done: function, fail: function, always: function
          */
         promise: function() {
             var self = this;
@@ -979,6 +1073,13 @@ var Promise = function(){
     }, true, false);
 
 
+    /**
+     * @param {function} fn
+     * @param {object} context
+     * @param {[]} args
+     * @returns {Promise}
+     * @static
+     */
     Promise.fcall = function(fn, context, args) {
         return Promise.resolve(fn.apply(context, args || []));
     };
@@ -986,6 +1087,7 @@ var Promise = function(){
     /**
      * @param {*} value
      * @returns {Promise}
+     * @static
      */
     Promise.resolve = function(value) {
         var p = new Promise;
@@ -997,6 +1099,7 @@ var Promise = function(){
     /**
      * @param {*} reason
      * @returns {Promise}
+     * @static
      */
     Promise.reject = function(reason) {
         var p = new Promise;
@@ -1008,6 +1111,7 @@ var Promise = function(){
     /**
      * @param {[]} promises -- array of promises or resolve values
      * @returns {Promise}
+     * @static
      */
     Promise.all = function(promises) {
 
@@ -1062,6 +1166,7 @@ var Promise = function(){
      * @param {Promise|*} promise2
      * @param {Promise|*} promiseN
      * @returns {Promise}
+     * @static
      */
     Promise.when = function() {
         return Promise.all(arguments);
@@ -1070,6 +1175,7 @@ var Promise = function(){
     /**
      * @param {[]} promises -- array of promises or resolve values
      * @returns {Promise}
+     * @static
      */
     Promise.allResolved = function(promises) {
 
@@ -1114,6 +1220,7 @@ var Promise = function(){
     /**
      * @param {[]} promises -- array of promises or resolve values
      * @returns {Promise}
+     * @static
      */
     Promise.race = function(promises) {
 
@@ -1150,6 +1257,7 @@ var Promise = function(){
     /**
      * @param {[]} functions -- array of promises or resolve values or functions
      * @returns {Promise}
+     * @static
      */
     Promise.waterfall = function(functions) {
 
@@ -1200,6 +1308,7 @@ var Promise = function(){
 
 
 
+
 /**
  * @param {Element} el
  * @param {String} cls
@@ -1208,6 +1317,7 @@ var Promise = function(){
 function hasClass(el, cls) {
     return cls ? getClsReg(cls).test(el.className) : false;
 };
+
 
 
 /**
@@ -1221,13 +1331,20 @@ function addClass(el, cls) {
 };
 
 
+
 function isString(value) {
     return typeof value == "string" || value === ""+value;
     //return typeof value == "string" || varType(value) === 0;
 };
-function getAttr(el, name) {
-    return el.getAttribute(name);
+
+function isNull(value) {
+    return value === null;
 };
+
+function getAttr(el, name) {
+    return el.getAttribute ? el.getAttribute(name) : null;
+};
+
 
 
 var raf = function() {
@@ -1262,6 +1379,7 @@ var raf = function() {
         }
     };
 }();
+
 function addListener(el, event, func) {
     if (el.attachEvent) {
         el.attachEvent('on' + event, func);
@@ -1270,6 +1388,7 @@ function addListener(el, event, func) {
     }
 };
 
+
 function removeListener(el, event, func) {
     if (el.detachEvent) {
         el.detachEvent('on' + event, func);
@@ -1277,6 +1396,7 @@ function removeListener(el, event, func) {
         el.removeEventListener(event, func, false);
     }
 };
+
 
 
 
@@ -1293,9 +1413,8 @@ var animate = function(){
 
         animId          = 0,
 
-        prefixes        = getAnimationPrefixes(),
-
-        cssAnimations   = !!prefixes,
+        prefixes        = false,
+        cssAnimations   = false,
 
         dataParam       = "mjsAnimationQueue",
 
@@ -1310,6 +1429,15 @@ var animate = function(){
                 }
             };
             raf(tick);
+        },
+
+
+        cssAnimSupported= function(){
+            if (prefixes === false) {
+                prefixes        = getAnimationPrefixes();
+                cssAnimations   = !!prefixes;
+            }
+            return cssAnimations;
         },
 
 
@@ -1420,6 +1548,22 @@ var animate = function(){
         };
 
 
+    /**
+     * @function animate
+     * @param {Element} el Element being animated
+     * @param {string|function|[]|object} animation {
+     *  'string' - registered animation name,<br>
+     *  'function' - fn(el, callback) - your own animation<br>
+     *  'array' - array or stages (class names)<br>
+     *  'array' - [{before}, {after}] - jquery animation<br>
+     *  'object' - {stages, fn, before, after, options, context, duration, start}
+     * }
+     * @param {function} startCallback call this function before animation begins
+     * @param {bool} checkIfEnabled check if mjs-animate attribute is present
+     * @param {MetaphorJs.Namespace} namespace registered animations storage
+     * @param {function} stepCallback call this function between stages
+     * @returns {MetaphorJs.Promise}
+     */
     var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
 
         var deferred    = new Promise,
@@ -1474,7 +1618,7 @@ var animate = function(){
             }
 
 
-            if (cssAnimations && stages) {
+            if (cssAnimSupported() && stages) {
 
                 queue.push({
                     el: el,
@@ -1560,14 +1704,19 @@ var animate = function(){
     };
 
     animate.stop = stopAnimation;
-    animate.prefixes = prefixes;
-    animate.cssAnimations = cssAnimations;
+    animate.getPrefixes = getAnimationPrefixes;
+    animate.getDuration = getAnimationDuration;
+
+    /**
+     * @function animate.cssAnimationSupported
+     * @returns {bool}
+     */
+    animate.cssAnimationSupported = cssAnimSupported;
 
     return animate;
 }();
 MetaphorJs['animate'] = animate;
 MetaphorJs['stopAnimation'] = stopAnimation;
-
 typeof global != "undefined" ? (global['MetaphorJs'] = MetaphorJs) : (window['MetaphorJs'] = MetaphorJs);
 
 }());

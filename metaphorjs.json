@@ -3,6 +3,27 @@
     "push": [
         "github"
     ],
+
+
+    "docs": {
+        "": {
+            "out": "docs",
+            "renderer": "default",
+            "src": [
+                "src/**"
+            ],
+            "itemSort": {
+                "by": "name",
+                "direction": "asc"
+            },
+            "includeExternal": false,
+            "data": {
+                "title": "MetaphorJs.animate",
+                "version": "v0.1.6"
+            }
+        }
+    },
+
     "build": {
         "standalone": {
             "wrap": true,
@@ -25,11 +46,16 @@
         "npm": {
             "target": "dist/metaphorjs.animate.npm.js",
             "compile": false,
+            "wrap": {
+                "exported": true,
+                "deferred": true,
+                "args": ["window"]
+            },
             "files": [
                 [
                     "src/metaphorjs.animate.js",
                     {
-                        "keepExports": true
+                        "as": "animate"
                     }
                 ]
             ],
@@ -38,7 +64,8 @@
             },
             "omit": [
                 "../metaphorjs-promise/src/metaphorjs.promise.js"
-            ]
+            ],
+            "returns": "animate"
         },
         "amd": {
             "auto": false,

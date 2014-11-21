@@ -14,9 +14,7 @@ var getAnimationPrefixes    = require("func/getAnimationPrefixes.js"),
     isPlainObject           = require("../../metaphorjs/src/func/isPlainObject.js"),
     isNull                  = require('../../metaphorjs/src/func/isNull.js'),
     getAttr                 = require("../../metaphorjs/src/func/dom/getAttr.js"),
-    raf                     = require("./func/raf.js"),
-    addListener             = require("../../metaphorjs/src/func/event/addListener.js"),
-    removeListener          = require("../../metaphorjs/src/func/event/removeListener.js");
+    raf                     = require("./func/raf.js");
 
 
 module.exports = function(){

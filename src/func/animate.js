@@ -1,20 +1,20 @@
 
-var getAnimationPrefixes    = require("func/getAnimationPrefixes.js"),
-    getAnimationDuration    = require("func/getAnimationDuration.js"),
-    stopAnimation           = require("func/stopAnimation.js"),
-    isArray                 = require("../../metaphorjs/src/func/isArray.js"),
-    isThenable              = require("../../metaphorjs/src/func/isThenable.js"),
-    extend                  = require("../../metaphorjs/src/func/extend.js"),
-    data                    = require("../../metaphorjs/src/func/dom/data.js"),
-    Promise                 = require("../../metaphorjs-promise/src/metaphorjs.promise.js"),
-    addClass                = require("../../metaphorjs/src/func/dom/addClass.js"),
-    removeClass             = require("../../metaphorjs/src/func/dom/removeClass.js"),
-    isString                = require("../../metaphorjs/src/func/isString.js"),
-    isFunction              = require("../../metaphorjs/src/func/isFunction.js"),
-    isPlainObject           = require("../../metaphorjs/src/func/isPlainObject.js"),
-    isNull                  = require('../../metaphorjs/src/func/isNull.js'),
-    getAttr                 = require("../../metaphorjs/src/func/dom/getAttr.js"),
-    raf                     = require("./func/raf.js");
+var getAnimationPrefixes    = require("./getAnimationPrefixes.js"),
+    getAnimationDuration    = require("./getAnimationDuration.js"),
+    stopAnimation           = require("./stopAnimation.js"),
+    isArray                 = require("metaphorjs/src/func/isArray.js"),
+    isThenable              = require("metaphorjs/src/func/isThenable.js"),
+    extend                  = require("metaphorjs/src/func/extend.js"),
+    data                    = require("metaphorjs/src/func/dom/data.js"),
+    Promise                 = require("metaphorjs-promise/src/lib/Promise.js"),
+    addClass                = require("metaphorjs/src/func/dom/addClass.js"),
+    removeClass             = require("metaphorjs/src/func/dom/removeClass.js"),
+    isString                = require("metaphorjs/src/func/isString.js"),
+    isFunction              = require("metaphorjs/src/func/isFunction.js"),
+    isPlainObject           = require("metaphorjs/src/func/isPlainObject.js"),
+    isNull                  = require('metaphorjs/src/func/isNull.js'),
+    getAttr                 = require("metaphorjs/src/func/dom/getAttr.js"),
+    raf                     = require("./raf.js");
 
 
 module.exports = function(){

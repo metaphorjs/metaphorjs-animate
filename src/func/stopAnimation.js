@@ -1,8 +1,8 @@
 
-var data = require("../../../metaphorjs/src/func/dom/data.js"),
-    removeClass = require("../../../metaphorjs/src/func/dom/removeClass.js"),
-    isFunction = require("../../../metaphorjs/src/func/isFunction.js"),
-    isArray = require("../../../metaphorjs/src/func/isArray.js");
+var data = require("metaphorjs/src/func/dom/data.js"),
+    removeClass = require("metaphorjs/src/func/dom/removeClass.js"),
+    isFunction = require("metaphorjs/src/func/isFunction.js"),
+    isArray = require("metaphorjs/src/func/isArray.js");
 
 /**
  * @function animate.stop

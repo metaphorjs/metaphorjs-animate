@@ -32,9 +32,9 @@
             "global": true,
             "target": "dist/metaphorjs.animate.js",
             "files": [
-                "../metaphorjs/src/MetaphorJs.js",
+                "metaphorjs/src/MetaphorJs.js",
                 [
-                    "src/metaphorjs.animate.js",
+                    "src/func/animate.js",
                     {
                         "as": "animate"
                     }
@@ -55,7 +55,7 @@
             },
             "files": [
                 [
-                    "src/metaphorjs.animate.js",
+                    "src/func/animate.js",
                     {
                         "as": "animate"
                     }
@@ -65,7 +65,7 @@
                 "metaphorjs-promise": "Promise"
             },
             "omit": [
-                "../metaphorjs-promise/src/metaphorjs.promise.js"
+                "metaphorjs-promise/src/lib/Promise.js"
             ],
             "returns": "animate"
         },
@@ -74,14 +74,14 @@
             "target": "dist/metaphorjs.animate.amd.js",
             "files": [
                 [
-                    "src/metaphorjs.animate.js",
+                    "src/func/animate.js",
                     {
                         "returnExports": true
                     }
                 ]
             ],
             "omit": [
-                "../metaphorjs-promise/src/metaphorjs.promise.js"
+                "metaphorjs-promise/src/lib/Promise.js"
             ],
             "define": {
                 "name": "metaphorjs-animate",

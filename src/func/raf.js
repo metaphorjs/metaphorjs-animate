@@ -1,5 +1,5 @@
 
-var strUndef = require("../../../metaphorjs/src/var/strUndef.js");
+var strUndef = require("metaphorjs/src/var/strUndef.js");
 
 module.exports = function() {
 

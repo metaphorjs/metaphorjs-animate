@@ -1690,8 +1690,9 @@ var animate = function(){
 
     return animate;
 }();
-MetaphorJs['animate'] = animate;
-MetaphorJs['stopAnimation'] = stopAnimation;
-typeof global != "undefined" ? (global['MetaphorJs'] = MetaphorJs) : (window['MetaphorJs'] = MetaphorJs);
+var MetaphorJsExports = {};
+MetaphorJsExports['animate'] = animate;
+MetaphorJsExports['stopAnimation'] = stopAnimation;
+typeof global != "undefined" ? (global['MetaphorJs'] = MetaphorJsExports) : (window['MetaphorJs'] = MetaphorJsExports);
 
 }());

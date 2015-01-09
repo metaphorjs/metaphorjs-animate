@@ -1656,6 +1656,7 @@ var animate = function(){
 
         // no animation happened
 
+
         if (startCallback) {
             var promise = startCallback(el);
             if (isThenable(promise)) {
@@ -1664,12 +1665,17 @@ var animate = function(){
                 });
             }
             else {
-                deferred.resolve(el);
+                //raf(function(){
+                    deferred.resolve(el);
+                //});
             }
         }
         else {
-            deferred.resolve(el);
+            //raf(function(){
+                deferred.resolve(el);
+            //});
         }
+
 
         return deferred;
     };

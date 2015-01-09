@@ -287,6 +287,7 @@ module.exports = function(){
 
         // no animation happened
 
+
         if (startCallback) {
             var promise = startCallback(el);
             if (isThenable(promise)) {
@@ -295,12 +296,17 @@ module.exports = function(){
                 });
             }
             else {
-                deferred.resolve(el);
+                //raf(function(){
+                    deferred.resolve(el);
+                //});
             }
         }
         else {
-            deferred.resolve(el);
+            //raf(function(){
+                deferred.resolve(el);
+            //});
         }
+
 
         return deferred;
     };

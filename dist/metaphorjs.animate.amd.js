@@ -832,6 +832,7 @@ return function(){
 
         // no animation happened
 
+
         if (startCallback) {
             var promise = startCallback(el);
             if (isThenable(promise)) {
@@ -840,12 +841,17 @@ return function(){
                 });
             }
             else {
-                deferred.resolve(el);
+                //raf(function(){
+                    deferred.resolve(el);
+                //});
             }
         }
         else {
-            deferred.resolve(el);
+            //raf(function(){
+                deferred.resolve(el);
+            //});
         }
+
 
         return deferred;
     };

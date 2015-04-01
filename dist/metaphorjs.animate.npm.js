@@ -449,7 +449,8 @@ var extend = function(){
         }
 
         while (args.length) {
-            if (src = args.shift()) {
+            // IE < 9 fix: check for hasOwnProperty presence
+            if ((src = args.shift()) && src.hasOwnProperty) {
                 for (k in src) {
 
                     if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
@@ -526,6 +527,33 @@ function getAttr(el, name) {
 
 var strUndef = "undefined";
 
+/**
+ * @param {Function} fn
+ * @param {*} context
+ */
+var bind = Function.prototype.bind ?
+              function(fn, context){
+                  return fn.bind(context);
+              } :
+              function(fn, context) {
+                  return function() {
+                      return fn.apply(context, arguments);
+                  };
+              };
+
+
+/**
+ * @param {Function} fn
+ * @param {Object} context
+ * @param {[]} args
+ * @param {number} timeout
+ */
+function async(fn, context, args, timeout) {
+    return setTimeout(function(){
+        fn.apply(context, args || []);
+    }, timeout || 0);
+};
+
 
 
 var raf = function() {
@@ -544,8 +572,10 @@ var raf = function() {
                     w.webkitCancelRequestAnimationFrame;
 
         if (raf) {
-            return function(fn) {
-                var id = raf(fn);
+            return function(fn, context, args) {
+                var id = raf(context || args ? function(){
+                    fn.apply(context, args || []);
+                } : fn);
                 return function() {
                     cancel(id);
                 };
@@ -553,12 +583,13 @@ var raf = function() {
         }
     }
 
-    return function(fn) {
-        var id = setTimeout(fn, 0);
-        return function() {
+    return function(fn, context, args){
+        var id = async(fn, context, args, 0);
+        return function(){
             clearTimeout(id);
-        }
+        };
     };
+
 }();
 
 

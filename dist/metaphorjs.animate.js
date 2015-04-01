@@ -455,7 +455,8 @@ var extend = function(){
         }
 
         while (args.length) {
-            if (src = args.shift()) {
+            // IE < 9 fix: check for hasOwnProperty presence
+            if ((src = args.shift()) && src.hasOwnProperty) {
                 for (k in src) {
 
                     if (src.hasOwnProperty(k) && (value = src[k]) !== undf) {
@@ -523,22 +524,54 @@ function async(fn, context, args, timeout) {
 
 
 
-function error(e) {
+var error = (function(){
 
-    var stack = e.stack || (new Error).stack;
+    var listeners = [];
 
-    if (typeof console != strUndef && console.log) {
-        async(function(){
-            console.log(e);
-            if (stack) {
-                console.log(stack);
+    var error = function error(e) {
+
+        var i, l;
+
+        for (i = 0, l = listeners.length; i < l; i++) {
+            listeners[i][0].call(listeners[i][1], e);
+        }
+
+        var stack = (e ? e.stack : null) || (new Error).stack;
+
+        if (typeof console != strUndef && console.log) {
+            async(function(){
+                if (e) {
+                    console.log(e);
+                }
+                if (stack) {
+                    console.log(stack);
+                }
+            });
+        }
+        else {
+            throw e;
+        }
+    };
+
+    error.on = function(fn, context) {
+        error.un(fn, context);
+        listeners.push([fn, context]);
+    };
+
+    error.un = function(fn, context) {
+        var i, l;
+        for (i = 0, l = listeners.length; i < l; i++) {
+            if (listeners[i][0] === fn && listeners[i][1] === context) {
+                listeners.splice(i, 1);
+                break;
             }
-        });
-    }
-    else {
-        throw e;
-    }
-};
+        }
+    };
+
+    return error;
+}());
+
+
 
 
 
@@ -728,6 +761,10 @@ var Promise = function(){
         },
 
         isFulfilled: function() {
+            return this._state == FULFILLED;
+        },
+
+        isResolved: function() {
             return this._state == FULFILLED;
         },
 
@@ -1366,8 +1403,10 @@ var raf = function() {
                     w.webkitCancelRequestAnimationFrame;
 
         if (raf) {
-            return function(fn) {
-                var id = raf(fn);
+            return function(fn, context, args) {
+                var id = raf(context || args ? function(){
+                    fn.apply(context, args || []);
+                } : fn);
                 return function() {
                     cancel(id);
                 };
@@ -1375,12 +1414,13 @@ var raf = function() {
         }
     }
 
-    return function(fn) {
-        var id = setTimeout(fn, 0);
-        return function() {
+    return function(fn, context, args){
+        var id = async(fn, context, args, 0);
+        return function(){
             clearTimeout(id);
-        }
+        };
     };
+
 }();
 
 

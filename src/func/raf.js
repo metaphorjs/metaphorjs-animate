@@ -1,5 +1,7 @@
 
-var strUndef = require("metaphorjs/src/var/strUndef.js");
+var strUndef = require("metaphorjs/src/var/strUndef.js"),
+    bind = require("metaphorjs/src/func/bind.js"),
+    async = require("metaphorjs/src/func/async.js");
 
 module.exports = function() {
 
@@ -17,8 +19,10 @@ module.exports = function() {
                     w.webkitCancelRequestAnimationFrame;
 
         if (raf) {
-            return function(fn) {
-                var id = raf(fn);
+            return function(fn, context, args) {
+                var id = raf(context || args ? function(){
+                    fn.apply(context, args || []);
+                } : fn);
                 return function() {
                     cancel(id);
                 };
@@ -26,10 +30,11 @@ module.exports = function() {
         }
     }
 
-    return function(fn) {
-        var id = setTimeout(fn, 0);
-        return function() {
+    return function(fn, context, args){
+        var id = async(fn, context, args, 0);
+        return function(){
             clearTimeout(id);
-        }
+        };
     };
+
 }();

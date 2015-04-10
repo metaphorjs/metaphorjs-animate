@@ -1,6 +1,5 @@
 
 var strUndef = require("metaphorjs/src/var/strUndef.js"),
-    bind = require("metaphorjs/src/func/bind.js"),
     async = require("metaphorjs/src/func/async.js");
 
 module.exports = function() {

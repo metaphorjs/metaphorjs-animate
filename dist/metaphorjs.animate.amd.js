@@ -524,22 +524,6 @@ function getAttr(el, name) {
 };
 
 var strUndef = "undefined";
-
-/**
- * @param {Function} fn
- * @param {*} context
- */
-var bind = Function.prototype.bind ?
-              function(fn, context){
-                  return fn.bind(context);
-              } :
-              function(fn, context) {
-                  return function() {
-                      return fn.apply(context, arguments);
-                  };
-              };
-
-
 /**
  * @param {Function} fn
  * @param {Object} context

@@ -93,7 +93,7 @@ module.exports = function(){
 
                 position++;
 
-                if (position == stages.length) {
+                if (position === stages.length) {
                     deferred.resolve(el);
                     data(el, dataParam).shift();
                     nextInQueue(el);
@@ -175,7 +175,7 @@ module.exports = function(){
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attrValue   = getAttr(el, "mjs-animate"),
+            attrValue   = getAttr(el, "*animate"),
             stages,
             jsFn,
             before, after,
@@ -191,7 +191,7 @@ module.exports = function(){
         if (animation) {
 
             if (isString(animation)) {
-                if (animation.substr(0,1) == '[') {
+                if (animation.substr(0,1) === '[') {
                     stages  = (new Function('', 'return ' + animation))();
                 }
                 else {
@@ -237,7 +237,7 @@ module.exports = function(){
                 });
                 data(el, dataParam, queue);
 
-                if (queue.length == 1) {
+                if (queue.length === 1) {
                     animationStage(el, stages, 0, startCallback, deferred, true, id, stepCallback);
                 }
 

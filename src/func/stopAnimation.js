@@ -33,7 +33,7 @@ module.exports = function(el) {
     else if (isFunction(queue)) {
         queue(el);
     }
-    else if (queue == "stop") {
+    else if (queue === "stop") {
         $(el).stop(true, true);
     }
 

@@ -8,7 +8,7 @@ module.exports = function(){
                 return 0;
             }
             var time = parseFloat(str);
-            if (str.indexOf("ms") == -1) {
+            if (str.indexOf("ms") === -1) {
                 time *= 1000;
             }
             return time;

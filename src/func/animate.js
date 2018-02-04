@@ -12,8 +12,6 @@ var getAnimationPrefixes    = require("./getAnimationPrefixes.js"),
     isString                = require("metaphorjs/src/func/isString.js"),
     isFunction              = require("metaphorjs/src/func/isFunction.js"),
     isPlainObject           = require("metaphorjs/src/func/isPlainObject.js"),
-    isNull                  = require('metaphorjs/src/func/isNull.js'),
-    getAttr                 = require("metaphorjs/src/func/dom/getAttr.js"),
     raf                     = require("./raf.js");
 
 
@@ -148,8 +146,6 @@ module.exports = function(){
                 }
             };
 
-
-
             first ? raf(start) : start();
         };
 
@@ -165,39 +161,24 @@ module.exports = function(){
      *  'object' - {stages, fn, before, after, options, context, duration, start}
      * }
      * @param {function} startCallback call this function before animation begins
-     * @param {bool} checkIfEnabled check if mjs-animate attribute is present
-     * @param {MetaphorJs.Namespace} namespace registered animations storage
      * @param {function} stepCallback call this function between stages
      * @returns {MetaphorJs.Promise}
      */
-    var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
+    var animate = function animate(el, animation, startCallback, stepCallback) {
 
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attrValue   = getAttr(el, "*animate"),
             stages,
             jsFn,
             before, after,
             options, context,
             duration;
 
-        animation       = animation || attrValue;
-
-        if (checkIfEnabled && isNull(attrValue)) {
-            animation   = null;
-        }
-
         if (animation) {
 
             if (isString(animation)) {
-                if (animation.substr(0,1) === '[') {
-                    stages  = (new Function('', 'return ' + animation))();
-                }
-                else {
-                    stages      = types[animation];
-                    animation   = namespace && namespace.get("animate." + animation, true);
-                }
+                stages = types[animation];
             }
             else if (isFunction(animation)) {
                 jsFn = animation;
@@ -287,7 +268,6 @@ module.exports = function(){
 
         // no animation happened
 
-
         if (startCallback) {
             var promise = startCallback(el);
             if (isThenable(promise)) {
@@ -296,17 +276,12 @@ module.exports = function(){
                 });
             }
             else {
-                //raf(function(){
-                    deferred.resolve(el);
-                //});
+                deferred.resolve(el);
             }
         }
         else {
-            //raf(function(){
-                deferred.resolve(el);
-            //});
+            deferred.resolve(el);
         }
-
 
         return deferred;
     };

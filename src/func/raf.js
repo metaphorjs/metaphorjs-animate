@@ -7,7 +7,7 @@ module.exports = function() {
     var raf,
         cancel;
 
-    if (typeof window != strUndef) {
+    if (typeof window !== strUndef) {
         var w   = window;
         raf     = w.requestAnimationFrame ||
                     w.webkitRequestAnimationFrame ||

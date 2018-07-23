@@ -5,7 +5,6 @@
         "kuindji <kuindji@gmail.com>"
     ],
     "description": "MetaphorJs animation engine",
-    "main": "dist/metaphorjs.animate.amd.min.js",
     "moduleType": [
         "amd"
     ],

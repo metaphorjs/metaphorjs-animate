@@ -2,7 +2,6 @@
     "name": "metaphorjs-animate",
     "version": "0.1.6",
     "description": "MetaphorJs animation engine",
-    "main": "dist/metaphorjs.animate.npm.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -15,8 +14,5 @@
     "bugs": {
         "url": "https://github.com/metaphorjs/metaphorjs-animate/issues"
     },
-    "homepage": "https://github.com/metaphorjs/metaphorjs-animate",
-    "dependencies": {
-        "metaphorjs-promise": "*"
-    }
+    "homepage": "https://github.com/metaphorjs/metaphorjs-animate"
 }

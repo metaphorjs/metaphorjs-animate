@@ -1,7 +1,7 @@
 
-var Promise = require("../../../metaphorjs-promise/src/metaphorjs.promise.js"),
-    isThenable = require("../../../metaphorjs/src/func/isThenable.js"),
-    emptyFn = require("../../../metaphorjs/src/func/emptyFn.js");
+var Promise = require("metaphorjs-promise/src/lib/Promise.js"),
+    isThenable = require("metaphorjs/src/func/isThenable.js"),
+    emptyFn = require("metaphorjs/src/func/emptyFn.js");
 
 module.exports = function() {
 

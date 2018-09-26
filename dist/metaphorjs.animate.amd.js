@@ -1,4 +1,6 @@
 define("metaphorjs-animate", ['metaphorjs-promise'], function(Promise) {
+/* BUNDLE START 183 */
+"use strict";
 
 var undf = undefined;
 
@@ -95,7 +97,7 @@ var getAnimationDuration = function(){
                 return 0;
             }
             var time = parseFloat(str);
-            if (str.indexOf("ms") == -1) {
+            if (str.indexOf("ms") === -1) {
                 time *= 1000;
             }
             return time;
@@ -280,7 +282,7 @@ var varType = function(){
     };
 
 
-    /**
+    /*
      * 'string': 0,
      * 'number': 1,
      * 'boolean': 2,
@@ -296,6 +298,9 @@ var varType = function(){
      * @param {*} value
      * @returns {number}
      */
+
+
+
     return function varType(val) {
 
         if (!val) {
@@ -313,7 +318,7 @@ var varType = function(){
             return -1;
         }
 
-        if (num == 1 && isNaN(val)) {
+        if (num === 1 && isNaN(val)) {
             return 8;
         }
 
@@ -329,7 +334,7 @@ var varType = function(){
  * @returns {boolean}
  */
 function isArray(value) {
-    return typeof value == "object" && varType(value) === 5;
+    return typeof value === "object" && varType(value) === 5;
 };
 
 
@@ -363,7 +368,7 @@ var stopAnimation = function(el) {
     else if (isFunction(queue)) {
         queue(el);
     }
-    else if (queue == "stop") {
+    else if (queue === "stop") {
         $(el).stop(true, true);
     }
 
@@ -485,6 +490,88 @@ var extend = function(){
     return extend;
 }();
 
+/**
+ * @param {Function} fn
+ * @param {*} context
+ */
+var bind = Function.prototype.bind ?
+              function(fn, context){
+                  return fn.bind(context);
+              } :
+              function(fn, context) {
+                  return function() {
+                      return fn.apply(context, arguments);
+                  };
+              };
+
+
+
+var strUndef = "undefined";
+/**
+ * @param {Function} fn
+ * @param {Object} context
+ * @param {[]} args
+ * @param {number} timeout
+ */
+function async(fn, context, args, timeout) {
+    return setTimeout(function(){
+        fn.apply(context, args || []);
+    }, timeout || 0);
+};
+
+
+
+var error = (function(){
+
+    var listeners = [];
+
+    var error = function error(e) {
+
+        var i, l;
+
+        for (i = 0, l = listeners.length; i < l; i++) {
+            if (listeners[i][0].call(listeners[i][1], e) === false) {
+                return;
+            }
+        }
+
+        var stack = (e ? e.stack : null) || (new Error).stack;
+
+        if (typeof console != strUndef && console.error) {
+            //async(function(){
+                if (e) {
+                    console.error(e);
+                }
+                if (stack) {
+                    console.error(stack);
+                }
+            //});
+        }
+        else {
+            throw e;
+        }
+    };
+
+    error.on = function(fn, context) {
+        error.un(fn, context);
+        listeners.push([fn, context]);
+    };
+
+    error.un = function(fn, context) {
+        var i, l;
+        for (i = 0, l = listeners.length; i < l; i++) {
+            if (listeners[i][0] === fn && listeners[i][1] === context) {
+                listeners.splice(i, 1);
+                break;
+            }
+        }
+    };
+
+    return error;
+}());
+
+
+
 
 
 /**
@@ -515,27 +602,6 @@ function isString(value) {
     //return typeof value == "string" || varType(value) === 0;
 };
 
-function isNull(value) {
-    return value === null;
-};
-
-function getAttr(el, name) {
-    return el.getAttribute ? el.getAttribute(name) : null;
-};
-
-var strUndef = "undefined";
-/**
- * @param {Function} fn
- * @param {Object} context
- * @param {[]} args
- * @param {number} timeout
- */
-function async(fn, context, args, timeout) {
-    return setTimeout(function(){
-        fn.apply(context, args || []);
-    }, timeout || 0);
-};
-
 
 
 var raf = function() {
@@ -543,7 +609,7 @@ var raf = function() {
     var raf,
         cancel;
 
-    if (typeof window != strUndef) {
+    if (typeof window !== strUndef) {
         var w   = window;
         raf     = w.requestAnimationFrame ||
                     w.webkitRequestAnimationFrame ||
@@ -577,7 +643,7 @@ var raf = function() {
 
 
 
-return function(){
+var animate = function(){
 
 
     var types           = {
@@ -653,7 +719,7 @@ return function(){
 
                 position++;
 
-                if (position == stages.length) {
+                if (position === stages.length) {
                     deferred.resolve(el);
                     data(el, dataParam).shift();
                     nextInQueue(el);
@@ -708,8 +774,6 @@ return function(){
                 }
             };
 
-
-
             first ? raf(start) : start();
         };
 
@@ -725,39 +789,24 @@ return function(){
      *  'object' - {stages, fn, before, after, options, context, duration, start}
      * }
      * @param {function} startCallback call this function before animation begins
-     * @param {bool} checkIfEnabled check if mjs-animate attribute is present
-     * @param {MetaphorJs.Namespace} namespace registered animations storage
      * @param {function} stepCallback call this function between stages
      * @returns {MetaphorJs.Promise}
      */
-    var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
+    var animate = function animate(el, animation, startCallback, stepCallback) {
 
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attrValue   = getAttr(el, "mjs-animate"),
             stages,
             jsFn,
             before, after,
             options, context,
             duration;
 
-        animation       = animation || attrValue;
-
-        if (checkIfEnabled && isNull(attrValue)) {
-            animation   = null;
-        }
-
         if (animation) {
 
             if (isString(animation)) {
-                if (animation.substr(0,1) == '[') {
-                    stages  = (new Function('', 'return ' + animation))();
-                }
-                else {
-                    stages      = types[animation];
-                    animation   = namespace && namespace.get("animate." + animation, true);
-                }
+                stages = types[animation];
             }
             else if (isFunction(animation)) {
                 jsFn = animation;
@@ -797,7 +846,7 @@ return function(){
                 });
                 data(el, dataParam, queue);
 
-                if (queue.length == 1) {
+                if (queue.length === 1) {
                     animationStage(el, stages, 0, startCallback, deferred, true, id, stepCallback);
                 }
 
@@ -847,7 +896,6 @@ return function(){
 
         // no animation happened
 
-
         if (startCallback) {
             var promise = startCallback(el);
             if (isThenable(promise)) {
@@ -856,17 +904,12 @@ return function(){
                 });
             }
             else {
-                //raf(function(){
-                    deferred.resolve(el);
-                //});
+                deferred.resolve(el);
             }
         }
         else {
-            //raf(function(){
-                deferred.resolve(el);
-            //});
+            deferred.resolve(el);
         }
-
 
         return deferred;
     };
@@ -887,6 +930,7 @@ return function(){
 
     return animate;
 }();
-
+return animate;
 });
 
+/* BUNDLE END 183 */

@@ -1,12 +1,6 @@
 (function(){
+/* BUNDLE START 003 */
 "use strict";
-
-
-var MetaphorJs = {
-
-
-};
-
 
 var undf = undefined;
 
@@ -103,7 +97,7 @@ var getAnimationDuration = function(){
                 return 0;
             }
             var time = parseFloat(str);
-            if (str.indexOf("ms") == -1) {
+            if (str.indexOf("ms") === -1) {
                 time *= 1000;
             }
             return time;
@@ -288,7 +282,7 @@ var varType = function(){
     };
 
 
-    /**
+    /*
      * 'string': 0,
      * 'number': 1,
      * 'boolean': 2,
@@ -304,6 +298,9 @@ var varType = function(){
      * @param {*} value
      * @returns {number}
      */
+
+
+
     return function varType(val) {
 
         if (!val) {
@@ -321,7 +318,7 @@ var varType = function(){
             return -1;
         }
 
-        if (num == 1 && isNaN(val)) {
+        if (num === 1 && isNaN(val)) {
             return 8;
         }
 
@@ -337,7 +334,7 @@ var varType = function(){
  * @returns {boolean}
  */
 function isArray(value) {
-    return typeof value == "object" && varType(value) === 5;
+    return typeof value === "object" && varType(value) === 5;
 };
 
 
@@ -371,7 +368,7 @@ var stopAnimation = function(el) {
     else if (isFunction(queue)) {
         queue(el);
     }
-    else if (queue == "stop") {
+    else if (queue === "stop") {
         $(el).stop(true, true);
     }
 
@@ -533,20 +530,22 @@ var error = (function(){
         var i, l;
 
         for (i = 0, l = listeners.length; i < l; i++) {
-            listeners[i][0].call(listeners[i][1], e);
+            if (listeners[i][0].call(listeners[i][1], e) === false) {
+                return;
+            }
         }
 
         var stack = (e ? e.stack : null) || (new Error).stack;
 
-        if (typeof console != strUndef && console.log) {
-            async(function(){
+        if (typeof console != strUndef && console.error) {
+            //async(function(){
                 if (e) {
-                    console.log(e);
+                    console.error(e);
                 }
                 if (stack) {
-                    console.log(stack);
+                    console.error(stack);
                 }
-            });
+            //});
         }
         else {
             throw e;
@@ -586,7 +585,7 @@ var Promise = function(){
         qRunning    = false,
 
 
-        nextTick    = typeof process != strUndef ?
+        nextTick    = typeof process !== strUndef ?
                         process.nextTick :
                         function(fn) {
                             setTimeout(fn, 0);
@@ -757,19 +756,33 @@ var Promise = function(){
         _triggered: false,
 
         isPending: function() {
-            return this._state == PENDING;
+            return this._state === PENDING;
         },
 
         isFulfilled: function() {
-            return this._state == FULFILLED;
+            return this._state === FULFILLED;
         },
 
         isResolved: function() {
-            return this._state == FULFILLED;
+            return this._state === FULFILLED;
         },
 
         isRejected: function() {
-            return this._state == REJECTED;
+            return this._state === REJECTED;
+        },
+
+        hasListeners: function() {
+            var self = this,
+                ls  = [self._fulfills, self._rejects, self._dones, self._fails],
+                i, l;
+
+            for (i = 0, l = ls.length; i < l; i++) {
+                if (ls[i] && ls[i].length) {
+                    return true;
+                }
+            }
+
+            return false;
         },
 
         _cleanup: function() {
@@ -786,7 +799,7 @@ var Promise = function(){
             var self    = this,
                 then;
 
-            if (self._state != PENDING) {
+            if (self._state !== PENDING) {
                 return;
             }
 
@@ -811,7 +824,7 @@ var Promise = function(){
                 }
             }
             catch (thrownError) {
-                if (self._state == PENDING) {
+                if (self._state === PENDING) {
                     self._doReject(thrownError);
                 }
                 return;
@@ -844,7 +857,7 @@ var Promise = function(){
             self._value = value;
             self._state = FULFILLED;
 
-            if (self._wait == 0) {
+            if (self._wait === 0) {
                 self._callResolveHandlers();
             }
         },
@@ -894,7 +907,7 @@ var Promise = function(){
             self._state     = REJECTED;
             self._reason    = reason;
 
-            if (self._wait == 0) {
+            if (self._wait === 0) {
                 self._callRejectHandlers();
             }
         },
@@ -925,15 +938,25 @@ var Promise = function(){
         /**
          * @param {Function} resolve -- called when this promise is resolved; returns new resolve value
          * @param {Function} reject -- called when this promise is rejects; returns new reject reason
+         * @param {object} context -- resolve's and reject's functions "this" object
          * @returns {Promise} new promise
          */
-        then: function(resolve, reject) {
+        then: function(resolve, reject, context) {
 
             var self            = this,
                 promise         = new Promise,
                 state           = self._state;
 
-            if (state == PENDING || self._wait != 0) {
+            if (context) {
+                if (resolve) {
+                    resolve = bind(resolve, context);
+                }
+                if (reject) {
+                    reject = bind(reject, context);
+                }
+            }
+
+            if (state === PENDING || self._wait !== 0) {
 
                 if (resolve && isFunction(resolve)) {
                     self._fulfills.push([wrapper(resolve, promise), null]);
@@ -949,7 +972,7 @@ var Promise = function(){
                     self._rejects.push([promise.reject, promise]);
                 }
             }
-            else if (state == FULFILLED) {
+            else if (state === FULFILLED) {
 
                 if (resolve && isFunction(resolve)) {
                     next(wrapper(resolve, promise), null, [self._value]);
@@ -958,7 +981,7 @@ var Promise = function(){
                     promise.resolve(self._value);
                 }
             }
-            else if (state == REJECTED) {
+            else if (state === REJECTED) {
                 if (reject && isFunction(reject)) {
                     next(wrapper(reject, promise), null, [self._reason]);
                 }
@@ -1003,7 +1026,7 @@ var Promise = function(){
             var self    = this,
                 state   = self._state;
 
-            if (state == FULFILLED && self._wait == 0) {
+            if (state === FULFILLED && self._wait === 0) {
                 try {
                     fn.call(context || null, self._value);
                 }
@@ -1011,7 +1034,7 @@ var Promise = function(){
                     error(thrown);
                 }
             }
-            else if (state == PENDING) {
+            else if (state === PENDING) {
                 self._dones.push([fn, context]);
             }
 
@@ -1044,7 +1067,7 @@ var Promise = function(){
             var self    = this,
                 state   = self._state;
 
-            if (state == REJECTED && self._wait == 0) {
+            if (state === REJECTED && self._wait === 0) {
                 try {
                     fn.call(context || null, self._reason);
                 }
@@ -1052,7 +1075,7 @@ var Promise = function(){
                     error(thrown);
                 }
             }
-            else if (state == PENDING) {
+            else if (state === PENDING) {
                 self._fails.push([fn, context]);
             }
 
@@ -1093,8 +1116,8 @@ var Promise = function(){
 
                 var done = function() {
                     self._wait--;
-                    if (self._wait == 0 && self._state != PENDING) {
-                        self._state == FULFILLED ?
+                    if (self._wait === 0 && self._state !== PENDING) {
+                        self._state === FULFILLED ?
                             self._callResolveHandlers() :
                             self._callRejectHandlers();
                     }
@@ -1169,7 +1192,7 @@ var Promise = function(){
                 values[inx] = value;
                 cnt--;
 
-                if (cnt == 0) {
+                if (cnt === 0) {
                     p.resolve(values);
                 }
             };
@@ -1235,7 +1258,7 @@ var Promise = function(){
             },
             proceed = function() {
                 cnt--;
-                if (cnt == 0) {
+                if (cnt === 0) {
                     p.resolve(values);
                 }
             };
@@ -1328,13 +1351,53 @@ var Promise = function(){
         return promise;
     };
 
+    Promise.forEach = function(items, fn, context, allResolved) {
+
+        var left = items.slice(),
+            p = new Promise,
+            values = [],
+            i = 0;
+
+        var next = function() {
+
+            if (!left.length) {
+                p.resolve(values);
+                return;
+            }
+
+            var item = left.shift(),
+                index = i;
+
+            i++;
+
+            Promise.fcall(fn, context, [item, index])
+                .done(function(result){
+                    values.push(result);
+                    next();
+                })
+                .fail(function(reason){
+                    if (allResolved) {
+                        p.reject(reason);
+                    }
+                    else {
+                        values.push(null);
+                        next();
+                    }
+                });
+        };
+
+        next();
+
+        return p;
+    };
+
     Promise.counter = function(cnt) {
 
         var promise     = new Promise;
 
         promise.countdown = function() {
             cnt--;
-            if (cnt == 0) {
+            if (cnt === 0) {
                 promise.resolve();
             }
         };
@@ -1377,14 +1440,6 @@ function isString(value) {
     //return typeof value == "string" || varType(value) === 0;
 };
 
-function isNull(value) {
-    return value === null;
-};
-
-function getAttr(el, name) {
-    return el.getAttribute ? el.getAttribute(name) : null;
-};
-
 
 
 var raf = function() {
@@ -1392,7 +1447,7 @@ var raf = function() {
     var raf,
         cancel;
 
-    if (typeof window != strUndef) {
+    if (typeof window !== strUndef) {
         var w   = window;
         raf     = w.requestAnimationFrame ||
                     w.webkitRequestAnimationFrame ||
@@ -1502,7 +1557,7 @@ var animate = function(){
 
                 position++;
 
-                if (position == stages.length) {
+                if (position === stages.length) {
                     deferred.resolve(el);
                     data(el, dataParam).shift();
                     nextInQueue(el);
@@ -1557,8 +1612,6 @@ var animate = function(){
                 }
             };
 
-
-
             first ? raf(start) : start();
         };
 
@@ -1574,39 +1627,24 @@ var animate = function(){
      *  'object' - {stages, fn, before, after, options, context, duration, start}
      * }
      * @param {function} startCallback call this function before animation begins
-     * @param {bool} checkIfEnabled check if mjs-animate attribute is present
-     * @param {MetaphorJs.Namespace} namespace registered animations storage
      * @param {function} stepCallback call this function between stages
      * @returns {MetaphorJs.Promise}
      */
-    var animate = function animate(el, animation, startCallback, checkIfEnabled, namespace, stepCallback) {
+    var animate = function animate(el, animation, startCallback, stepCallback) {
 
         var deferred    = new Promise,
             queue       = data(el, dataParam) || [],
             id          = ++animId,
-            attrValue   = getAttr(el, "mjs-animate"),
             stages,
             jsFn,
             before, after,
             options, context,
             duration;
 
-        animation       = animation || attrValue;
-
-        if (checkIfEnabled && isNull(attrValue)) {
-            animation   = null;
-        }
-
         if (animation) {
 
             if (isString(animation)) {
-                if (animation.substr(0,1) == '[') {
-                    stages  = (new Function('', 'return ' + animation))();
-                }
-                else {
-                    stages      = types[animation];
-                    animation   = namespace && namespace.get("animate." + animation, true);
-                }
+                stages = types[animation];
             }
             else if (isFunction(animation)) {
                 jsFn = animation;
@@ -1646,7 +1684,7 @@ var animate = function(){
                 });
                 data(el, dataParam, queue);
 
-                if (queue.length == 1) {
+                if (queue.length === 1) {
                     animationStage(el, stages, 0, startCallback, deferred, true, id, stepCallback);
                 }
 
@@ -1696,7 +1734,6 @@ var animate = function(){
 
         // no animation happened
 
-
         if (startCallback) {
             var promise = startCallback(el);
             if (isThenable(promise)) {
@@ -1705,17 +1742,12 @@ var animate = function(){
                 });
             }
             else {
-                //raf(function(){
-                    deferred.resolve(el);
-                //});
+                deferred.resolve(el);
             }
         }
         else {
-            //raf(function(){
-                deferred.resolve(el);
-            //});
+            deferred.resolve(el);
         }
-
 
         return deferred;
     };
@@ -1736,9 +1768,10 @@ var animate = function(){
 
     return animate;
 }();
-var MetaphorJsExports = {};
-MetaphorJsExports['animate'] = animate;
-MetaphorJsExports['stopAnimation'] = stopAnimation;
-typeof global != "undefined" ? (global['MetaphorJs'] = MetaphorJsExports) : (window['MetaphorJs'] = MetaphorJsExports);
+var __mjsExport = {};
+__mjsExport['animate'] = animate;
+__mjsExport['stopAnimation'] = stopAnimation;
 
-}());
+typeof global != "undefined" ? (global['MetaphorJs'] = __mjsExport) : (window['MetaphorJs'] = __mjsExport);
+
+}());/* BUNDLE END 003 */

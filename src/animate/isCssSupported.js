@@ -1,8 +1,8 @@
 
 require("./__init.js");
+require("./getPrefixes.js");
 
-var MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js"),
-    animate_getPrefixes = require("./getPrefixes.js");
+var MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
 
 /**
  * Is css animation supported in current browser
@@ -15,7 +15,7 @@ module.exports = MetaphorJs.animate.isCssSupported = (function(){
 
     return function() {
         if (cssAnimations === null) {
-            cssAnimations   = !!animate_getPrefixes();
+            cssAnimations   = !!MetaphorJs.animate.getPrefixes();
         }
         return cssAnimations;
     };

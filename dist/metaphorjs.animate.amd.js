@@ -1,5 +1,5 @@
 define("metaphorjs-animate", function() {
-/* BUNDLE START 1NL */
+/* BUNDLE START 1NT */
 "use strict";
 
 
@@ -74,8 +74,16 @@ var animate_getPrefixes = MetaphorJs.animate.getPrefixes = function(){
 
 
     /**
-     * @function animate.getPrefixes
-     * @returns {object}
+     * Get css prefixes used in current browser
+     * @function MetaphorJs.animate.getPrefixes
+     * @returns {object} {
+     *  @type {string} animationDelay
+     *  @type {string} animationDuration
+     *  @type {string} transitionDelay
+     *  @type {string} transitionDuration
+     *  @type {string} transform
+     *  @type {string} transitionend
+     * }
      */
     return function() {
 
@@ -140,14 +148,16 @@ var animate_getDuration = MetaphorJs.animate.getDuration = function(){
 
 
     /**
-     * @function animate.getDuration
+     * Get duration in milliseconds from html 
+     * element based on current computed style
+     * @function MetaphorJs.animate.getDuration
      * @param {Element} el
      * @returns {number}
      */
     return function(el) {
 
         if (pfx === false) {
-            pfx = MetaphorJs.animate.getPrefixes();
+            pfx = animate_getPrefixes();
             animationDuration = pfx ? pfx.animationDuration : null;
             animationDelay = pfx ? pfx.animationDelay : null;
             transitionDuration = pfx ? pfx.transitionDuration : null;
@@ -179,6 +189,12 @@ var animate_getDuration = MetaphorJs.animate.getDuration = function(){
 
 
 
+
+/**
+ * Is css animation supported in current browser
+ * @function MetaphorJs.animate.isCssSupported
+ * @returns {bool}
+ */
 var animate_isCssSupported = MetaphorJs.animate.isCssSupported = (function(){
 
     var cssAnimations = null;
@@ -190,6 +206,137 @@ var animate_isCssSupported = MetaphorJs.animate.isCssSupported = (function(){
         return cssAnimations;
     };
 }());
+
+/**
+ * Check if given value is a function
+ * @function isFunction
+ * @param {*} value 
+ * @returns {boolean}
+ */
+function isFunction(value) {
+    return typeof value == 'function';
+};
+
+
+
+/**
+ * Checks if given value is a thenable (a Promise)
+ * @function isThenable
+ * @param {*} any
+ * @returns {boolean|function}
+ */
+function isThenable(any) {
+
+    // any.then must only be accessed once
+    // this is a promise/a+ requirement
+
+    if (!any) { //  || !any.then
+        return false;
+    }
+    
+    var t;
+
+    //if (!any || (!isObject(any) && !isFunction(any))) {
+    if (((t = typeof any) != "object" && t != "function")) {
+        return false;
+    }
+
+    var then = any.then;
+
+    return isFunction(then) ? then : false;
+};
+
+/**
+ * Bind function to context (Function.bind wrapper)
+ * @function bind
+ * @param {Function} fn
+ * @param {*} context
+ */
+function bind(fn, context){
+    return fn.bind(context);
+};
+
+var strUndef = "undefined";
+
+
+
+/**
+ * Log thrown error to console (in debug mode) and 
+ * call all error listeners
+ * @function error
+ * @param {Error} e 
+ */
+var error = (function(){
+
+    var listeners = [];
+
+    var error = function error(e) {
+
+        var i, l;
+
+        for (i = 0, l = listeners.length; i < l; i++) {
+            listeners[i][0].call(listeners[i][1], e)
+        }
+
+        /*DEBUG-START*/
+        if (typeof console != strUndef && console.error) {
+            console.error(e);
+        }
+        /*DEBUG-END*/
+    };
+
+    /**
+     * Subscribe to all errors
+     * @method on
+     * @param {function} fn 
+     * @param {object} context 
+     */
+    error.on = function(fn, context) {
+        error.un(fn, context);
+        listeners.push([fn, context]);
+    };
+
+    /**
+     * Unsubscribe from all errors
+     * @method un
+     * @param {function} fn 
+     * @param {object} context 
+     */
+    error.un = function(fn, context) {
+        var i, l;
+        for (i = 0, l = listeners.length; i < l; i++) {
+            if (listeners[i][0] === fn && listeners[i][1] === context) {
+                listeners.splice(i, 1);
+                break;
+            }
+        }
+    };
+
+    return error;
+}());
+
+
+
+
+
+/**
+ * Transform anything into array
+ * @function toArray
+ * @param {*} list
+ * @returns {array}
+ */
+function toArray(list) {
+    if (list && !list.length != undf && list !== ""+list) {
+        for(var a = [], i =- 1, l = list.length>>>0; ++i !== l; a[i] = list[i]){}
+        return a;
+    }
+    else if (list) {
+        return [list];
+    }
+    else {
+        return [];
+    }
+};
 
 /**
  * Convert anything to string
@@ -260,78 +407,6 @@ var _varType = function(){
     };
 
 }();
-
-
-
-/**
- * Check if given value is array (not just array-like)
- * @function isArray
- * @param {*} value
- * @returns {boolean}
- */
-function isArray(value) {
-    return typeof value === "object" && _varType(value) === 5;
-};
-
-/**
- * Check if given value is a function
- * @function isFunction
- * @param {*} value 
- * @returns {boolean}
- */
-function isFunction(value) {
-    return typeof value == 'function';
-};
-
-
-
-/**
- * Checks if given value is a thenable (a Promise)
- * @function isThenable
- * @param {*} any
- * @returns {boolean|function}
- */
-function isThenable(any) {
-
-    // any.then must only be accessed once
-    // this is a promise/a+ requirement
-
-    if (!any) { //  || !any.then
-        return false;
-    }
-    
-    var t;
-
-    //if (!any || (!isObject(any) && !isFunction(any))) {
-    if (((t = typeof any) != "object" && t != "function")) {
-        return false;
-    }
-
-    var then = any.then;
-
-    return isFunction(then) ? then : false;
-};
-
-
-
-/**
- * Transform anything into array
- * @function toArray
- * @param {*} list
- * @returns {array}
- */
-function toArray(list) {
-    if (list && !list.length != undf && list !== ""+list) {
-        for(var a = [], i =- 1, l = list.length>>>0; ++i !== l; a[i] = list[i]){}
-        return a;
-    }
-    else if (list) {
-        return [list];
-    }
-    else {
-        return [];
-    }
-};
 
 
 
@@ -426,151 +501,6 @@ function extend() {
 
     return dst;
 };
-
-
-
-
-MetaphorJs.dom = MetaphorJs.dom || {};
-var nextUid = (function(){
-
-var uid = ['0', '0', '0'];
-
-// from AngularJs
-/**
- * Generates new alphanumeric id with starting 
- * length of 3 characters. IDs are consequential.
- * @function nextUid
- * @returns {string}
- */
-function nextUid() {
-    var index = uid.length;
-    var digit;
-
-    while(index) {
-        index--;
-        digit = uid[index].charCodeAt(0);
-        if (digit == 57 /*'9'*/) {
-            uid[index] = 'A';
-            return uid.join('');
-        }
-        if (digit == 90  /*'Z'*/) {
-            uid[index] = '0';
-        } else {
-            uid[index] = String.fromCharCode(digit + 1);
-            return uid.join('');
-        }
-    }
-    uid.unshift('0');
-    return uid.join('');
-};
-
-return nextUid;
-}());
-
-
-
-
-
-var dom_data = MetaphorJs.dom.data = function(){
-
-    var dataCache   = {},
-
-        getNodeId   = function(el) {
-            return el._mjsid || (el._mjsid = nextUid());
-        };
-
-    /**
-     * @param {Element} el
-     * @param {String} key
-     * @param {*} value optional
-     */
-    return function data(el, key, value) {
-        var id  = getNodeId(el),
-            obj = dataCache[id];
-
-        if (value !== undf) {
-            if (!obj) {
-                obj = dataCache[id] = {};
-            }
-            obj[key] = value;
-            return value;
-        }
-        else {
-            return obj ? obj[key] : undf;
-        }
-    };
-
-}();
-
-/**
- * Bind function to context (Function.bind wrapper)
- * @function bind
- * @param {Function} fn
- * @param {*} context
- */
-function bind(fn, context){
-    return fn.bind(context);
-};
-
-var strUndef = "undefined";
-
-
-
-/**
- * Log thrown error to console (in debug mode) and 
- * call all error listeners
- * @function error
- * @param {Error} e 
- */
-var error = (function(){
-
-    var listeners = [];
-
-    var error = function error(e) {
-
-        var i, l;
-
-        for (i = 0, l = listeners.length; i < l; i++) {
-            listeners[i][0].call(listeners[i][1], e)
-        }
-
-        /*DEBUG-START*/
-        if (typeof console != strUndef && console.error) {
-            console.error(e);
-        }
-        /*DEBUG-END*/
-    };
-
-    /**
-     * Subscribe to all errors
-     * @method on
-     * @param {function} fn 
-     * @param {object} context 
-     */
-    error.on = function(fn, context) {
-        error.un(fn, context);
-        listeners.push([fn, context]);
-    };
-
-    /**
-     * Unsubscribe from all errors
-     * @method un
-     * @param {function} fn 
-     * @param {object} context 
-     */
-    error.un = function(fn, context) {
-        var i, l;
-        for (i = 0, l = listeners.length; i < l; i++) {
-            if (listeners[i][0] === fn && listeners[i][1] === context) {
-                listeners.splice(i, 1);
-                break;
-            }
-        }
-    };
-
-    return error;
-}());
-
 
 
 
@@ -1517,6 +1447,80 @@ var lib_Promise = MetaphorJs.lib.Promise = function(){
 
 
 
+MetaphorJs.dom = MetaphorJs.dom || {};
+var nextUid = (function(){
+
+var uid = ['0', '0', '0'];
+
+// from AngularJs
+/**
+ * Generates new alphanumeric id with starting 
+ * length of 3 characters. IDs are consequential.
+ * @function nextUid
+ * @returns {string}
+ */
+function nextUid() {
+    var index = uid.length;
+    var digit;
+
+    while(index) {
+        index--;
+        digit = uid[index].charCodeAt(0);
+        if (digit == 57 /*'9'*/) {
+            uid[index] = 'A';
+            return uid.join('');
+        }
+        if (digit == 90  /*'Z'*/) {
+            uid[index] = '0';
+        } else {
+            uid[index] = String.fromCharCode(digit + 1);
+            return uid.join('');
+        }
+    }
+    uid.unshift('0');
+    return uid.join('');
+};
+
+return nextUid;
+}());
+
+
+
+
+
+var dom_data = MetaphorJs.dom.data = function(){
+
+    var dataCache   = {},
+
+        getNodeId   = function(el) {
+            return el._mjsid || (el._mjsid = nextUid());
+        };
+
+    /**
+     * @param {Element} el
+     * @param {String} key
+     * @param {*} value optional
+     */
+    return function data(el, key, value) {
+        var id  = getNodeId(el),
+            obj = dataCache[id];
+
+        if (value !== undf) {
+            if (!obj) {
+                obj = dataCache[id] = {};
+            }
+            obj[key] = value;
+            return value;
+        }
+        else {
+            return obj ? obj[key] : undf;
+        }
+    };
+
+}();
+
+
+
 
 var lib_Cache = MetaphorJs.lib.Cache = (function(){
 
@@ -1783,6 +1787,18 @@ var dom_removeClass = MetaphorJs.dom.removeClass = function(el, cls) {
     }
 };
 
+
+
+/**
+ * Check if given value is array (not just array-like)
+ * @function isArray
+ * @param {*} value
+ * @returns {boolean}
+ */
+function isArray(value) {
+    return typeof value === "object" && _varType(value) === 5;
+};
+
 /**
  * Check if given value is a string
  * @function isString
@@ -1849,8 +1865,12 @@ var raf = function() {
 
 
 
-var animate = MetaphorJs.animate.animate = function(){
 
+
+
+
+
+var animate = MetaphorJs.animate.animate = function(){
 
     var types           = {
             "show":     ["mjs-show"],
@@ -1971,7 +1991,7 @@ var animate = MetaphorJs.animate.animate = function(){
 
 
     /**
-     * @function animate
+     * @function MetaphorJs.animate.animate
      * @param {Element} el Element being animated
      * @param {string|function|[]|object} animation {
      *  'string' - registered animation name,<br>
@@ -1982,7 +2002,7 @@ var animate = MetaphorJs.animate.animate = function(){
      * }
      * @param {function} startCallback call this function before animation begins
      * @param {function} stepCallback call this function between stages
-     * @returns {MetaphorJs.lib.Promise}
+     * @returns {lib_Promise}
      */
     var animate = function animate(el, animation, startCallback, stepCallback) {
 
@@ -2106,6 +2126,11 @@ var animate = MetaphorJs.animate.animate = function(){
         return deferred;
     };
 
+    /**
+     * @function MetaphorJs.animate.animate.addAnimationType
+     * @param {string} name 
+     * @param {array} stages 
+     */
     animate.addAnimationType     = function(name, stages) {
         types[name] = stages;
     };
@@ -2117,7 +2142,10 @@ var animate = MetaphorJs.animate.animate = function(){
 
 
 
+
+
 /**
+ * Stop ongoing animation for given element
  * @function MetaphorJs.animate.stop
  * @param {Element} el
  */
@@ -2156,4 +2184,4 @@ var stop = MetaphorJs.animate.stop = function(el) {
 return MetaphorJs.animate;
 });
 
-/* BUNDLE END 1NL */
+/* BUNDLE END 1NT */

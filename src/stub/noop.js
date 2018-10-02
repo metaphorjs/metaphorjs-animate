@@ -1,6 +1,6 @@
+require("metaphorjs-promise/src/lib/Promise.js");
 
-var lib_Promise = require("metaphorjs-promise/src/lib/Promise.js"),
-    isThenable = require("metaphorjs-shared/src/func/isThenable.js"),
+var isThenable = require("metaphorjs-shared/src/func/isThenable.js"),
     emptyFn = require("metaphorjs-shared/src/func/emptyFn.js");
 
 module.exports = function() {
@@ -9,7 +9,7 @@ module.exports = function() {
 
         if (startCallback) {
             var promise = startCallback(el),
-                deferred    = new lib_Promise;
+                deferred    = new MetaphorJs.lib.Promise;
             if (isThenable(promise)) {
                 promise.done(function(){
                     deferred.resolve(el);
@@ -21,7 +21,7 @@ module.exports = function() {
             return deferred;
         }
         else {
-            return lib_Promise.resolve(el);
+            return MetaphorJs.lib.Promise.resolve(el);
         }
     };
 

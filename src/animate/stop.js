@@ -1,9 +1,9 @@
 
 require("./__init.js");
+require("metaphorjs/src/func/dom/data.js");
+require("metaphorjs/src/func/dom/removeClass.js");
 
-var dom_data = require("metaphorjs/src/func/dom/data.js"),
-    dom_removeClass = require("metaphorjs/src/func/dom/removeClass.js"),
-    isFunction = require("metaphorjs-shared/src/func/isFunction.js"),
+var isFunction = require("metaphorjs-shared/src/func/isFunction.js"),
     isArray = require("metaphorjs-shared/src/func/isArray.js"),
     MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
 
@@ -14,7 +14,7 @@ var dom_data = require("metaphorjs/src/func/dom/data.js"),
  */
 module.exports = MetaphorJs.animate.stop = function(el) {
 
-    var queue = dom_data(el, "mjsAnimationQueue"),
+    var queue = MetaphorJs.dom.data(el, "mjsAnimationQueue"),
         current,
         position,
         stages;
@@ -26,8 +26,8 @@ module.exports = MetaphorJs.animate.stop = function(el) {
             if (current.stages) {
                 position = current.position;
                 stages = current.stages;
-                dom_removeClass(el, stages[position]);
-                dom_removeClass(el, stages[position] + "-active");
+                MetaphorJs.dom.removeClass(el, stages[position]);
+                MetaphorJs.dom.removeClass(el, stages[position] + "-active");
             }
             if (current.deferred) {
                 current.deferred.reject(current.el);

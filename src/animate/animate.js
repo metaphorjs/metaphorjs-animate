@@ -1,24 +1,22 @@
 
 require("./__init.js");
+require("./getDuration.js");
+require("./isCssSupported.js");
+require("metaphorjs-promise/src/lib/Promise.js");
+require("metaphorjs/src/func/dom/data.js");
+require("metaphorjs/src/func/dom/addClass.js");
+require("metaphorjs/src/func/dom/removeClass.js");
 
-var animate_getDuration     = require("./getDuration.js"),
-    animate_isCssSupported  = require("./isCssSupported.js"),
-    isArray                 = require("metaphorjs-shared/src/func/isArray.js"),
+var isArray                 = require("metaphorjs-shared/src/func/isArray.js"),
     isThenable              = require("metaphorjs-shared/src/func/isThenable.js"),
     extend                  = require("metaphorjs-shared/src/func/extend.js"),
-    dom_data                = require("metaphorjs/src/func/dom/data.js"),
-    lib_Promise             = require("metaphorjs-promise/src/lib/Promise.js"),
-    dom_addClass            = require("metaphorjs/src/func/dom/addClass.js"),
-    dom_removeClass         = require("metaphorjs/src/func/dom/removeClass.js"),
     isString                = require("metaphorjs-shared/src/func/isString.js"),
     isFunction              = require("metaphorjs-shared/src/func/isFunction.js"),
     isPlainObject           = require("metaphorjs-shared/src/func/isPlainObject.js"),
     raf                     = require("../func/raf.js"),
     MetaphorJs              = require("metaphorjs-shared/src/MetaphorJs.js");
 
-
 module.exports = MetaphorJs.animate.animate = function(){
-
 
     var types           = {
             "show":     ["mjs-show"],
@@ -46,14 +44,14 @@ module.exports = MetaphorJs.animate.animate = function(){
 
 
         nextInQueue     = function(el) {
-            var queue = dom_data(el, dataParam),
+            var queue = MetaphorJs.dom.data(el, dataParam),
                 next;
             if (queue.length) {
                 next = queue[0];
                 animationStage(next.el, next.stages, 0, next.start, next.deferred, false, next.id, next.step);
             }
             else {
-                dom_data(el, dataParam, null);
+                MetaphorJs.dom.data(el, dataParam, null);
             }
         },
 
@@ -61,7 +59,7 @@ module.exports = MetaphorJs.animate.animate = function(){
                                                   deferred, first, id, stepCallback) {
 
             var stopped   = function() {
-                var q = dom_data(el, dataParam);
+                var q = MetaphorJs.dom.data(el, dataParam);
                 if (!q || !q.length || q[0].id != id) {
                     deferred.reject(el);
                     return true;
@@ -81,29 +79,29 @@ module.exports = MetaphorJs.animate.animate = function(){
 
                 if (position === stages.length) {
                     deferred.resolve(el);
-                    dom_data(el, dataParam).shift();
+                    MetaphorJs.dom.data(el, dataParam).shift();
                     nextInQueue(el);
                 }
                 else {
-                    dom_data(el, dataParam)[0].position = position;
+                    MetaphorJs.dom.data(el, dataParam)[0].position = position;
                     animationStage(el, stages, position, null, deferred, false, id, stepCallback);
                 }
 
-                dom_removeClass(el, stages[thisPosition]);
-                dom_removeClass(el, stages[thisPosition] + "-active");
+                MetaphorJs.dom.removeClass(el, stages[thisPosition]);
+                MetaphorJs.dom.removeClass(el, stages[thisPosition] + "-active");
             };
 
             var setStage = function() {
 
                 if (!stopped()) {
 
-                    dom_addClass(el, stages[position] + "-active");
+                    MetaphorJs.dom.addClass(el, stages[position] + "-active");
 
-                    lib_Promise.resolve(stepCallback && stepCallback(el, position, "active"))
+                    MetaphorJs.lib.Promise.resolve(stepCallback && stepCallback(el, position, "active"))
                         .done(function(){
                             if (!stopped()) {
 
-                                var duration = animate_getDuration(el);
+                                var duration = MetaphorJs.animate.getDuration(el);
 
                                 if (duration) {
                                     callTimeout(finishStage, (new Date).getTime(), duration);
@@ -120,9 +118,9 @@ module.exports = MetaphorJs.animate.animate = function(){
             var start = function(){
 
                 if (!stopped()) {
-                    dom_addClass(el, stages[position]);
+                    MetaphorJs.dom.addClass(el, stages[position]);
 
-                    lib_Promise.waterfall([
+                    MetaphorJs.lib.Promise.waterfall([
                             stepCallback && stepCallback(el, position, "start"),
                             function(){
                                 return startCallback ? startCallback(el) : null;
@@ -154,8 +152,8 @@ module.exports = MetaphorJs.animate.animate = function(){
      */
     var animate = function animate(el, animation, startCallback, stepCallback) {
 
-        var deferred    = new lib_Promise,
-            queue       = dom_data(el, dataParam) || [],
+        var deferred    = new MetaphorJs.lib.Promise,
+            queue       = MetaphorJs.dom.data(el, dataParam) || [],
             id          = ++animId,
             stages,
             jsFn,
@@ -193,7 +191,7 @@ module.exports = MetaphorJs.animate.animate = function(){
             }
 
 
-            if (animate_isCssSupported() && stages) {
+            if (MetaphorJs.animate.isCssSupported() && stages) {
 
                 queue.push({
                     el: el,
@@ -204,7 +202,7 @@ module.exports = MetaphorJs.animate.animate = function(){
                     position: 0,
                     id: id
                 });
-                dom_data(el, dataParam, queue);
+                MetaphorJs.dom.data(el, dataParam, queue);
 
                 if (queue.length === 1) {
                     animationStage(el, stages, 0, startCallback, deferred, true, id, stepCallback);
@@ -231,7 +229,7 @@ module.exports = MetaphorJs.animate.animate = function(){
                         extend(el.style, before, true, false);
                     }
                     startCallback && startCallback(el);
-                    dom_data(el, dataParam, jsFn.call(context, el, function(){
+                    MetaphorJs.dom.data(el, dataParam, jsFn.call(context, el, function(){
                         deferred.resolve(el);
                     }));
                     return deferred;
@@ -240,7 +238,7 @@ module.exports = MetaphorJs.animate.animate = function(){
 
                     var j = $(el);
                     before && j.css(before);
-                    dom_data(el, dataParam, "stop");
+                    MetaphorJs.dom.data(el, dataParam, "stop");
 
                     if (jsFn && isString(jsFn)) {
                         j[jsFn](options);

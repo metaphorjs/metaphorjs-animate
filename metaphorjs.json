@@ -1,39 +1,34 @@
 {
-    "version": "0.1.6",
+    "version": "0.2.0",
     "description": "MetaphorJs animation engine",
 
     "docs": {
-        "": {
-            "out": "docs",
-            "renderer": "default",
-            "src": [
-                "src/**"
-            ],
-            "itemSort": {
-                "by": "name",
-                "direction": "asc"
-            },
-            "includeExternal": false,
+        "out": "docs",
+        "renderer": {
+            "type": "default",
             "data": {
                 "title": "MetaphorJs.animate",
-                "version": "v0.1.6"
+                "version": "v0.2.0"
             }
-        }
+        },
+        "src": [
+            "src/**"
+        ],
+        "includeExternal": false    
     },
 
     "build": {
         "standalone": {
             "target": "dist/metaphorjs.animate.js",
             "files": [
-                ["src/func/animate.js",  {"as": "*"}]
+                "src/animate/animate.js",
+                "src/animate/stop.js"
             ],
             "options": {
                 "wrap": true,
-                "global": true,
-                "expose": [
-                    "animate",
-                    "stopAnimation"
-                ]
+                "global": {
+                    "expose": "MetaphorJs"
+                }
             }  
         },
 
@@ -46,18 +41,13 @@
         "amd": {
             "target": "dist/metaphorjs.animate.amd.js",
             "files": [
-                ["src/func/animate.js",  {"as": "*"}]
-            ],
-            "omit": [
-                "metaphorjs-promise/src/lib/Promise.js"
+                ["src/animate/animate.js",  {"as": "*"}],
+                ["src/animate/stop.js",  {"as": "*"}]
             ],
             "options": {
                 "amd": {
                     "name": "metaphorjs-animate",
-                    "return": "animate",
-                    "deps": {
-                        "metaphorjs-promise": "Promise"
-                    }
+                    "return": "MetaphorJs.animate"
                 }
             }
         },

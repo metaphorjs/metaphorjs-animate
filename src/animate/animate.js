@@ -2,6 +2,7 @@
 require("./__init.js");
 require("./getDuration.js");
 require("./isCssSupported.js");
+require("./easing.js");
 require("metaphorjs-promise/src/lib/Promise.js");
 require("metaphorjs/src/func/dom/data.js");
 require("metaphorjs/src/func/dom/addClass.js");
@@ -133,6 +134,72 @@ module.exports = MetaphorJs.animate.animate = function(){
             };
 
             first ? raf(start) : start();
+        },
+
+
+        jsAnimation = function(el, animation, deferred, startCallback, stepCallback) {
+
+            var duration    = animation.duration || 500,
+                timingFn    = animation.timing || "linear",
+                from        = animation.from,
+                to          = animation.to,
+                draw        = animation.draw;
+                
+            timingFn = typeof timingFn === "string" ? 
+                            MetaphorJs.animate.easing[timingFn] :
+                            timingFn;
+
+            if (!timingFn) {
+                throw new Error("Missing easing function " + animation.timing);
+            }
+
+            typeof from === "function" && (from = from(el));
+            typeof to === "function" && (to = to(el));
+
+            var calc = animation.calc || function(from, to, frac) {
+                return from + ((to - from) * frac);
+            };
+            
+            var apply = function(progress) {
+
+                var res;
+
+                if (isPlainObject(to)) {
+                    res = {};
+                    for (var k in to) {
+                        res[k] = calc(from[k], to[k], progress, k);
+                    }
+                }
+                else {
+                    res = calc(from, to, progress);
+                }
+
+                draw(el, res);
+                stepCallback && stepCallback(el, res);
+            };
+
+            var step = function() {
+                // timeFraction goes from 0 to 1
+                var time = (new Date).getTime();
+                var timeFraction = (time - start) / duration;
+                if (timeFraction > 1) timeFraction = 1;
+    
+                // calculate the current animation state
+                var progress = timingFn(timeFraction);
+    
+                apply(progress); // draw it
+    
+                if (timeFraction < 1) {
+                    raf(step);
+                }
+                else {
+                    deferred.resolve(el);
+                }
+            };
+            
+            var start = (new Date).getTime();
+            startCallback && startCallback(el);
+            step(start);
         };
 
 
@@ -178,8 +245,7 @@ module.exports = MetaphorJs.animate.animate = function(){
                     after = animation[1];
                 }
             }
-
-            if (isPlainObject(animation)) {
+            else if (isPlainObject(animation)) {
                 stages      = animation.stages;
                 jsFn        = animation.fn;
                 before      = animation.before;
@@ -189,7 +255,6 @@ module.exports = MetaphorJs.animate.animate = function(){
                 duration    = animation.duration || null;
                 startCallback   = startCallback || options.start;
             }
-
 
             if (MetaphorJs.animate.isCssSupported() && stages) {
 
@@ -208,6 +273,10 @@ module.exports = MetaphorJs.animate.animate = function(){
                     animationStage(el, stages, 0, startCallback, deferred, true, id, stepCallback);
                 }
 
+                return deferred;
+            }
+            else if (animation.draw) {
+                jsAnimation(el, animation, deferred, startCallback, stepCallback);
                 return deferred;
             }
             else {

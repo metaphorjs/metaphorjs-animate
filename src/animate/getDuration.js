@@ -40,7 +40,7 @@ module.exports = MetaphorJs.animate.getDuration = function(){
      * Get duration in milliseconds from html 
      * element based on current computed style
      * @function MetaphorJs.animate.getDuration
-     * @param {Element} el
+     * @param {HTMLElement} el
      * @returns {number}
      */
     return function(el) {

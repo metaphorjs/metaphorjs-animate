@@ -10,7 +10,7 @@ var isFunction = require("metaphorjs-shared/src/func/isFunction.js"),
 /**
  * Stop ongoing animation for given element
  * @function MetaphorJs.animate.stop
- * @param {Element} el
+ * @param {HTMLElement} el
  */
 module.exports = MetaphorJs.animate.stop = function(el) {
 

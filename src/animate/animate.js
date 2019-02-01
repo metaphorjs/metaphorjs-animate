@@ -205,7 +205,7 @@ module.exports = MetaphorJs.animate.animate = function(){
 
     /**
      * @function MetaphorJs.animate.animate
-     * @param {Element} el Element being animated
+     * @param {HTMLElement} el Element being animated
      * @param {string|function|[]|object} animation {
      *  'string' - registered animation name,<br>
      *  'function' - fn(el, callback) - your own animation<br>

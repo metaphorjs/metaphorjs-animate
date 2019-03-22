@@ -24,13 +24,13 @@ module.exports = MetaphorJs.animate.getPrefixes = function(){
                 pfx,
                 i, len;
 
-            if (el.style['animationName'] !== undf) {
+            if (el.style && el.style['animationName'] !== undf) {
                 animation = true;
             }
             else {
                 for(i = 0, len = domPrefixes.length; i < len; i++) {
                     pfx = domPrefixes[i];
-                    if (el.style[ pfx + 'AnimationName' ] !== undf) {
+                    if (el.style && el.style[ pfx + 'AnimationName' ] !== undf) {
                         animation           = true;
                         animationDelay      = pfx + "AnimationDelay";
                         animationDuration   = pfx + "AnimationDuration";

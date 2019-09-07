@@ -1,36 +1,46 @@
 Prism.languages.markup = {
-	'comment': /<!--[\w\W]*?-->/g,
-	'prolog': /<\?.+?\?>/,
-	'doctype': /<!DOCTYPE.+?>/,
-	'cdata': /<!\[CDATA\[[\w\W]*?]]>/i,
+	'comment': /<!--[\s\S]*?-->/,
+	'prolog': /<\?[\s\S]+?\?>/,
+	'doctype': /<!DOCTYPE[\s\S]+?>/i,
+	'cdata': /<!\[CDATA\[[\s\S]*?]]>/i,
 	'tag': {
-		pattern: /<\/?[\w:-]+\s*(?:\s+[\w:-]+(?:=(?:("|')(\\?[\w\W])*?\1|[^\s'">=]+))?\s*)*\/?>/gi,
+		pattern: /<\/?(?!\d)[^\s>\/=$<%]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\[\s\S]|(?!\1)[^\\])*\1|[^\s'">=]+))?)*\s*\/?>/i,
+		greedy: true,
 		inside: {
 			'tag': {
-				pattern: /^<\/?[\w:-]+/i,
+				pattern: /^<\/?[^\s>\/]+/i,
 				inside: {
 					'punctuation': /^<\/?/,
-					'namespace': /^[\w-]+?:/
+					'namespace': /^[^\s>\/:]+:/
 				}
 			},
 			'attr-value': {
-				pattern: /=(?:('|")[\w\W]*?(\1)|[^\s>]+)/gi,
+				pattern: /=(?:("|')(?:\\[\s\S]|(?!\1)[^\\])*\1|[^\s'">=]+)/i,
 				inside: {
-					'punctuation': /=|>|"/g
+					'punctuation': [
+						/^=/,
+						{
+							pattern: /(^|[^\\])["']/,
+							lookbehind: true
+						}
+					]
 				}
 			},
-			'punctuation': /\/?>/g,
+			'punctuation': /\/?>/,
 			'attr-name': {
-				pattern: /[\w:-]+/g,
+				pattern: /[^\s>\/]+/,
 				inside: {
-					'namespace': /^[\w-]+?:/
+					'namespace': /^[^\s>\/:]+:/
 				}
 			}
 
 		}
 	},
-	'entity': /\&#?[\da-z]{1,8};/gi
+	'entity': /&#?[\da-z]{1,8};/i
 };
+
+Prism.languages.markup['tag'].inside['attr-value'].inside['entity'] =
+	Prism.languages.markup['entity'];
 
 // Plugin to make entity title show the real entity, idea by Roman Komarov
 Prism.hooks.add('wrap', function(env) {
@@ -39,3 +49,8 @@ Prism.hooks.add('wrap', function(env) {
 		env.attributes['title'] = env.content.replace(/&amp;/, '&');
 	}
 });
+
+Prism.languages.xml = Prism.languages.markup;
+Prism.languages.html = Prism.languages.markup;
+Prism.languages.mathml = Prism.languages.markup;
+Prism.languages.svg = Prism.languages.markup;

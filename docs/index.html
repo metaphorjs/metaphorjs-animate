@@ -1,89 +1,263 @@
-<!DOCTYPE html><html><head lang="en">
-    <meta charset="UTF-8">
+<!DOCTYPE html><html mjs-app="DocsApp"><head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>MetaphorJs.animate</title>
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="bower_components/prism/themes/prism.css">
     <link rel="stylesheet" href="assets/style.css">
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="bower_components/prism/prism.js"></script>
+    
+
+    <script type="text/javascript" src="bower_components/prism/prism.js"></script>
+    <script type="text/javascript" src="bower_components/prism/plugins/keep-markup/prism-keep-markup.min.js"></script>
+    <script type="text/javascript" src="assets/metaphorjs.js"></script>
 </head>
 <body>
 
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">MetaphorJs.animate</a>
-        </div>
+<div class="navbar navbar-expand navbar-dark bg-dark fixed-top" role="navigation" {if}="!this.pageOptions.hideTopMenu" {class.fixed-top}="!this.multipage">
 
+    <a class="navbar-brand" [href]=".topTitleLink || '#'" {bind}=".topTitle || .title"></a>
 
-        <div class="navbar-collapse collapse">
+    <mjs-if value="this.$app.hasNav('top-menu')">
 
-            
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            Functions
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href="#">animate</a>
-                            </li><li>
-                                <a href="#">animate.cssAnimationSupported</a>
-                            </li><li>
-                                <a href="#">animate.getDuration</a>
-                            </li><li>
-                                <a href="#">animate.getPrefixes</a>
-                            </li><li>
-                                <a href="#">animate.stop</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler1" aria-controls="navbarToggler1" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-            
-        </div><!--/.nav-collapse -->
+    <div class="collapse navbar-collapse">
+
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown" {each}="section in .sourceTree.structure | toArray | navFilter:'top-menu'">
+                <a href="#" {init}="this.open = false" (click)="this.open = true" (blur)="this.open = false" (blur.$async)="200" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button">
+                    <span {bind}=".section.value.groupName"></span>
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu" role="menu" {show}="this.open" {show.$display}="block">
+                    <div class="dropdown-item" {each}="item in .section.value.children" {include}="top-menu.entry"></div>
+                </div>
+            </li>
+        </ul>
+        <!--
+        <ul class="navbar-nav navbar-right"
+            {if}=".hasOwnProperty('topRightMenu')">
+            <li class="nav-item" 
+                {each}="item in .topRightMenu">
+                <a class="nav-link" 
+                    [href]=".item.href" 
+                    {bind}=".item.name"></a>
+            </li>
+        </ul>-->
 
     </div>
+    </mjs-if> 
 </div>
 
 <div class="jumbotron">
     <div class="container">
         <h1>MetaphorJs.animate</h1>
         <p></p>
-        <p>v0.1.6</p>
+        <p>v0.2.0</p>
     </div>
 </div>
 
 <div class="container source-container">
     <div class="row item-group level-0">
         
-        <div class="col-md-12 item-group-items item-group-type-function level-0">
-            <div class="item-header" id="animate">
+        <div class="col-md-12 item-group-items level-0 item-group-type-function">
+
+<div class="item-header" id="function:MetaphorJs.animate.getPrefixes">
     
         
     
     <h3>
         
-        <span class="item-name">animate</span>
+        
+            <span class="item-type">function</span>
+        
+        <span class="item-name">MetaphorJs.animate.getPrefixes</span>
         
             
-                <span class="item-name-arguments">(el, animation, startCallback, checkIfEnabled, namespace, stepCallback)</span>
+            
+                <span class="item-name-arguments">()</span>
+            
+            
+                <span class="item-name-returns">&nbsp;-&gt;
+                    object
+            </span>
+        
+    </h3>
+</div>
+
+
+
+
+    <div class="item-description">
+        
+            <p>Get css prefixes used in current browser</p>
+
+        
+        
+    </div>
+
+
+
+
+
+
+
+
+    
+
+    
+</div><div class="col-md-12 item-group-items level-0 item-group-type-function">
+
+<div class="item-header" id="function:MetaphorJs.animate.getDuration">
+    
+        
+    
+    <h3>
+        
+        
+            <span class="item-type">function</span>
+        
+        <span class="item-name">MetaphorJs.animate.getDuration</span>
+        
+            
+                <span class="item-name-arguments">(el)</span>
             
             
             
-                <span class="item-name-returns">&nbsp;-&gt; MetaphorJs.Promise </span>
+                <span class="item-name-returns">&nbsp;-&gt;
+                    number
+            </span>
+        
+    </h3>
+</div>
+
+
+
+
+    <div class="item-description">
+        
+            <p>Get duration in milliseconds from html
+element based on current computed style</p>
+
+        
+        
+    </div>
+
+
+
+
+
+
+
+
+    
+
+    
+    <ul class="item-properties item-properties-param level-0">
+        <li class="item-property item-property-param">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.getDuration/el">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">Element</span>
+        
+        
+        <span class="item-name">el</span>
+        
+    </h4>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+        </li>
+    </ul>
+
+    
+</div><div class="col-md-12 item-group-items level-0 item-group-type-function">
+
+<div class="item-header" id="function:MetaphorJs.animate.isCssSupported">
+    
+        
+    
+    <h3>
+        
+        
+            <span class="item-type">function</span>
+        
+        <span class="item-name">MetaphorJs.animate.isCssSupported</span>
+        
             
             
+                <span class="item-name-arguments">()</span>
+            
+            
+                <span class="item-name-returns">&nbsp;-&gt;
+                    boolean
+            </span>
+        
+    </h3>
+</div>
+
+
+
+
+    <div class="item-description">
+        
+            <p>Is css animation supported in current browser</p>
+
+        
+        
+    </div>
+
+
+
+
+
+
+
+
+    
+
+    
+</div><div class="col-md-12 item-group-items level-0 item-group-type-function">
+
+<div class="item-header" id="function:MetaphorJs.animate.animate">
+    
+        
+    
+    <h3>
+        
+        
+            <span class="item-type">function</span>
+        
+        <span class="item-name">MetaphorJs.animate.animate</span>
+        
+            
+                <span class="item-name-arguments">(el, animation, startCallback, stepCallback)</span>
+            
+            
+            
+                <span class="item-name-returns">&nbsp;-&gt;
+                    MetaphorJs.lib.Promise
+            </span>
         
     </h3>
 </div>
@@ -94,17 +268,25 @@
 
 
 
+
+
+
+
     
+
     
     <ul class="item-properties item-properties-param level-0">
         <li class="item-property item-property-param">
-            <div class="item-header" id="animate/el">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.animate/el">
     
         
     
     <h4>
         
-            <span class="item-type">Element </span>
+            <span class="item-type">Element</span>
+        
         
         <span class="item-name">el</span>
         
@@ -112,10 +294,13 @@
 </div>
 
 
+
+
     <div class="item-description">
         
             <p>Element being animated</p>
 
+        
         
     </div>
 
@@ -124,21 +309,30 @@
 
 
 
+
+
+    
+
     
 
         </li><li class="item-property item-property-param">
-            <div class="item-header" id="animate/animation">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.animate/animation">
     
         
     
     <h4>
         
-            <span class="item-type">string | function | array | object </span>
+            <span class="item-type">string | function | array | object</span>
+        
         
         <span class="item-name">animation</span>
         
     </h4>
 </div>
+
+
 
 
     <div class="item-description">
@@ -150,6 +344,7 @@
 'object' - {stages, fn, before, after, options, context, duration, start}</p>
 
         
+        
     </div>
 
 
@@ -157,16 +352,23 @@
 
 
 
+
+
+    
+
     
 
         </li><li class="item-property item-property-param">
-            <div class="item-header" id="animate/startCallback">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.animate/startCallback">
     
         
     
     <h4>
         
-            <span class="item-type">function </span>
+            <span class="item-type">function</span>
+        
         
         <span class="item-name">startCallback</span>
         
@@ -175,10 +377,11 @@
                 <span class="item-name-arguments">()</span>
             
             
-            
         
     </h4>
 </div>
+
+
 
 
     <div class="item-description">
@@ -186,34 +389,6 @@
             <p>call this function before animation begins</p>
 
         
-    </div>
-
-
-
-
-
-
-    
-
-        </li><li class="item-property item-property-param">
-            <div class="item-header" id="animate/checkIfEnabled">
-    
-        
-    
-    <h4>
-        
-            <span class="item-type">boolean </span>
-        
-        <span class="item-name">checkIfEnabled</span>
-        
-    </h4>
-</div>
-
-
-    <div class="item-description">
-        
-            <p>check if mjs-animate attribute is present</p>
-
         
     </div>
 
@@ -222,45 +397,23 @@
 
 
 
+
+
+    
+
     
 
         </li><li class="item-property item-property-param">
-            <div class="item-header" id="animate/namespace">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.animate/stepCallback">
     
         
     
     <h4>
         
-            <span class="item-type">MetaphorJs.Namespace </span>
+            <span class="item-type">function</span>
         
-        <span class="item-name">namespace</span>
-        
-    </h4>
-</div>
-
-
-    <div class="item-description">
-        
-            <p>registered animations storage</p>
-
-        
-    </div>
-
-
-
-
-
-
-    
-
-        </li><li class="item-property item-property-param">
-            <div class="item-header" id="animate/stepCallback">
-    
-        
-    
-    <h4>
-        
-            <span class="item-type">function </span>
         
         <span class="item-name">stepCallback</span>
         
@@ -269,10 +422,11 @@
                 <span class="item-name-arguments">()</span>
             
             
-            
         
     </h4>
 </div>
+
+
 
 
     <div class="item-description">
@@ -280,6 +434,7 @@
             <p>call this function between stages</p>
 
         
+        
     </div>
 
 
@@ -287,27 +442,32 @@
 
 
 
+
+
+    
+
     
 
         </li>
     </ul>
 
+    
+</div><div class="col-md-12 item-group-items level-0 item-group-type-function">
 
-        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
-            <div class="item-header" id="animate.cssAnimationSupported">
+<div class="item-header" id="function:MetaphorJs.animate.animate.addAnimationType">
     
         
     
     <h3>
         
-        <span class="item-name">animate.cssAnimationSupported</span>
+        
+            <span class="item-type">function</span>
+        
+        <span class="item-name">MetaphorJs.animate.animate.addAnimationType</span>
         
             
+                <span class="item-name-arguments">(name, stages)</span>
             
-                <span class="item-name-arguments">()</span>
-            
-            
-                <span class="item-name-returns">&nbsp;-&gt; boolean </span>
             
             
         
@@ -320,25 +480,98 @@
 
 
 
+
+
+
+
     
 
-        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
-            <div class="item-header" id="animate.getDuration">
+    
+    <ul class="item-properties item-properties-param level-0">
+        <li class="item-property item-property-param">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.animate.addAnimationType/name">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">string</span>
+        
+        
+        <span class="item-name">name</span>
+        
+    </h4>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+        </li><li class="item-property item-property-param">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.animate.addAnimationType/stages">
+    
+        
+    
+    <h4>
+        
+            <span class="item-type">array</span>
+        
+        
+        <span class="item-name">stages</span>
+        
+    </h4>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+        </li>
+    </ul>
+
+    
+</div><div class="col-md-12 item-group-items level-0 item-group-type-function">
+
+<div class="item-header" id="function:MetaphorJs.animate.stop">
     
         
     
     <h3>
         
-        <span class="item-name">animate.getDuration</span>
+        
+            <span class="item-type">function</span>
+        
+        <span class="item-name">MetaphorJs.animate.stop</span>
         
             
                 <span class="item-name-arguments">(el)</span>
             
             
             
-                <span class="item-name-returns">&nbsp;-&gt; number </span>
-            
-            
         
     </h3>
 </div>
@@ -346,20 +579,36 @@
 
 
 
+    <div class="item-description">
+        
+            <p>Stop ongoing animation for given element</p>
+
+        
+        
+    </div>
+
+
+
+
+
 
 
 
     
+
     
     <ul class="item-properties item-properties-param level-0">
         <li class="item-property item-property-param">
-            <div class="item-header" id="animate.getDuration/el">
+            
+
+<div class="item-header" id="function:MetaphorJs.animate.stop/el">
     
         
     
     <h4>
         
-            <span class="item-type">Element </span>
+            <span class="item-type">Element</span>
+        
         
         <span class="item-name">el</span>
         
@@ -372,101 +621,1026 @@
 
 
 
-    
-
-        </li>
-    </ul>
-
-
-        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
-            <div class="item-header" id="animate.getPrefixes">
-    
-        
-    
-    <h3>
-        
-        <span class="item-name">animate.getPrefixes</span>
-        
-            
-            
-                <span class="item-name-arguments">()</span>
-            
-            
-                <span class="item-name-returns">&nbsp;-&gt; object </span>
-            
-            
-        
-    </h3>
-</div>
-
-
-
 
 
 
 
     
-
-        </div><div class="col-md-12 item-group-items item-group-type-function level-0">
-            <div class="item-header" id="animate.stop">
-    
-        
-    
-    <h3>
-        
-        <span class="item-name">animate.stop</span>
-        
-            
-                <span class="item-name-arguments">(el)</span>
-            
-            
-            
-            
-        
-    </h3>
-</div>
-
-
-
-
-
-
-
-    
-    
-    <ul class="item-properties item-properties-param level-0">
-        <li class="item-property item-property-param">
-            <div class="item-header" id="animate.stop/el">
-    
-        
-    
-    <h4>
-        
-            <span class="item-type">Element </span>
-        
-        <span class="item-name">el</span>
-        
-    </h4>
-</div>
-
-
-
-
-
-
 
     
 
         </li>
     </ul>
 
-
-        </div>
+    
+</div>
     </div>
 </div>
 
 <div class="footer">
     <div class="container"></div>
+</div>
+
+<script type="text/mjs-template" $ignore-inside="" id="*.content.*"><div class="content-page level-0"
+    {bind-html}=".content.content"></div></script><script type="text/mjs-template" $ignore-inside="" id="*.item.*"><!--{
+    description: "Generic item template"
+}-->
+<mjs-include src="this.item.fileType + '.item.' + this.item.type + '.header'"></mjs-include>
+<mjs-include src="this.item.fileType + '.item.' + this.item.type + '.flags'"></mjs-include>
+<mjs-include src="this.item.fileType + '.item.' + this.item.type + '.description'"></mjs-include>
+
+<mjs-if value=".item.hasInherited">
+    <div class="item-inheritance-toggler">
+        <a href="#" 
+           (click)="this.showInherited = !this.showInherited" 
+           {bind}="this.showInherited ? 'Hide inherited' : 'Show inherited'"></a>
+    </div>
+</mjs-if>
+
+<div {if}=".item.level == 1 && .item.children.length && !.item.isFunction"
+    class="row">
+    <div class="col-3 col-md-3 nopadding item-nav-container">
+        <mjs-include src=".item.fileType + '.item.' + .item.type + '.nav'"></mjs-include>
+    </div>
+    <div class="col-9 col-md-9 nopadding item-properties-container">
+        <mjs-include src=".item.fileType + '.item.' + .item.type + '.properties'"></mjs-include>
+    </div>
+</div>
+
+<mjs-if value=".item.level > 1 || .item.isFunction">
+    <mjs-include src=".item.fileType + '.item.' + .item.type + '.properties'"></mjs-include>
+    <mjs-if value=".item.isFunction && 
+                    .item.plainFlags.hasOwnProperty('returnDescription')">
+        <mjs-include src=".item.fileType + '.item.' + .item.type + '.returns'"></mjs-include>
+    </mjs-if>
+</mjs-if></script><script type="text/mjs-template" $ignore-inside="" id="*.item.*.description"><!--{
+    description: "Item description"
+}-->
+<mjs-if value="!!this.item.hasOwnProperty('description')">
+    <div {each}="descr in .item.description" 
+         class="item-description">
+        <mjs-if value=".descr.contentType == 'string'">
+            <mjs-bind-html value=".descr.content | markdown"></mjs-bind-html>
+        </mjs-if>
+        <mjs-if value=".descr.contentType == 'code'">
+            <pre><code {class}="'language-' + .descr.fileType | prismClass" 
+                       {bind}=".descr.content"></code></pre>
+        </mjs-if>
+    </div>
+</mjs-if>
+</script><script type="text/mjs-template" $ignore-inside="" id="*.item.*.flags"><!--{
+    description: "Item flags"
+}-->
+<ul {each}="flags in .item.flags | toArray"
+    {if}=".flags.key != 'returns' && .flags.key != 'returnDescription' && .flags.key != 'type'"
+    class="item-flags">
+    <li {each}="flag in .flags.value">
+        <code>@{{ .$parent.flags.key }}</code>
+        <mjs-if value=".flag.contentType == 'string'">
+            <span {bind-html}=".flag.content | markdownLinks"></span>
+        </mjs-if>
+        <mjs-if value=".flag.contentType == 'typeRef'">
+            <a [href]="'#' + .flag.ref" {bind}=".flag.content"></a>
+        </mjs-if>
+    </li>
+</ul></script><script type="text/mjs-template" $ignore-inside="" id="*.item.*.header"><!--{
+    description: "Item header with type, name, params and return type"
+}-->
+<div [id]=".item.fullName" 
+     class="item-header"
+     {init}=".isFunction = .item.isFunction ||
+                        (.item.plainFlags.hasOwnProperty('type') &&
+                        .item.plainFlags.type.indexOf('function') != -1 && 
+                        .item.plainFlags.type.length == 1)">
+    <mjs-if value=".item.hasOwnProperty('booleanFlags')">
+        <span class="badge badge-warning item-label" 
+              {each}="flag in .item.booleanFlags" 
+              {bind}=".flag"></span>
+    </mjs-if>
+    <mjs-tag value=".item.level + 2 > 6 ? 'h6' : 'h' + (.item.level + 2)">
+        <mjs-if value=".item.plainFlags.hasOwnProperty('type')">
+            <span class="item-type"
+                  {bind-html}=".item.plainFlags.type | map:'filter.typeRef' | join:' | ' | markdownLinks"></span>
+        </mjs-if>
+        <mjs-if value=".item.level == 1 && 
+                        .item.hasOwnProperty('type') && 
+                        !.item.plainFlags.hasOwnProperty('type')">
+            <span class="item-type" {bind}=".item.type"></span>
+        </mjs-if>
+        <span class="item-name" {bind}=".item.name"></span>
+        <mjs-if value=".isFunction">
+            <mjs-if value=".item.childTypes.indexOf('param') != -1">
+                <span class="item-name-arguments">({{
+                    .item | getChildren:"param" | collect:"name" | join:", "
+                }})</span>
+            </mjs-if>
+            <mjs-if value=".item.childTypes.indexOf('param') == -1">
+                <span class="item-name-arguments">()</span>
+            </mjs-if>
+            <mjs-if value=".item.plainFlags.hasOwnProperty('returns')">
+                <span class="item-name-returns">&nbsp;->
+                    <mjs-bind-html value=".item.plainFlags.returns | map:'filter.typeRef' | join:' | ' | markdownLinks"></mjs-bind-html>
+            </mjs-if>
+        </mjs-if>
+    </mjs-tag>
+</div></script><script type="text/mjs-template" $ignore-inside="" id="*.item.*.nav"><!--{
+    description: "Item left nav"
+}-->
+<ul {each}="group in .item.children" class="item-nav">
+    <li class="item-nav-group-name" 
+        {bind}=".group.groupName"></li>
+    <li {each}="item in .group.items"
+        {show}="!.item.isInherited || $parent.$parent.showInherited"
+        {init}=".isFunction = .item.isFunction ||
+                                (.item.plainFlags.hasOwnProperty('type') && 
+                                .item.plainFlags.type.indexOf('function') != -1)"
+        class="item-nav-property"
+        {class}="'item-nav-property-' + .item.type"
+        {class.inherited}=".item.isInherited">
+
+        <a [href]="'#' + .item.fullName" [title]=".item.name">
+            <span class="item-nav-item-name" {bind}=".item.navName || .item.name"></span>
+            <mjs-if value=".isFunction">
+                <mjs-if value=".item.childTypes.indexOf('param') != -1">
+                    <span class="item-nav-item-arguments">({{ .item | getChildren:"param" | collect:"name" | join:", " }})</span>
+                </mjs-if>
+                <mjs-if value=".item.childTypes.indexOf('param') == -1">
+                    <span class="item-nav-item-arguments">()</span>
+                </mjs-if>
+            </mjs-if>
+        </a>
+    </li>
+</ul>
+</script><script type="text/mjs-template" $ignore-inside="" id="*.item.*.properties"><!--{
+    description: "Item properties and methods"
+}-->
+<mjs-each value="group in .item.children">
+    <div {if}=".group.type != 'param' && .$parent.item.level == 1"
+         class="item-property-group-name" 
+         {bind}=".group.groupName"></div>
+    <ul class="item-properties"
+        {class}="['item-properties-'+ .group.type, 
+                  'level-'+ (.$parent.item.level - 1)]">
+        <li {each}="item in .group.items" 
+            class="item-property"
+            {show}="!.item.isInherited || .$parent.showInherited"
+            {class}="'item-property-'+ .item.type"
+            {class.inherited}=".item.isInherited">
+            <mjs-include src=".item.template"></mjs-include>
+        </li>
+    </ul>
+</mjs-each></script><script type="text/mjs-template" $ignore-inside="" id="*.item.*.returns"><!--{
+    description: "Item return value and description"
+}-->
+<div class="item-returns"
+    {class}="['level-'+ (.item.level)]">
+    <mjs-if value=".item.plainFlags.hasOwnProperty('returns')">
+        <span class="item-name-returns">->
+            {<mjs-bind-html value=".item.plainFlags.returns | map:'filter.typeRef' | join:' | ' | markdownLinks"></mjs-bind-html>}
+        </span>
+    </mjs-if>
+    <span class="item-name-return-descr"
+            {bind}=".item.plainFlags.returnDescription[0]"></span>
+</div></script><script type="text/mjs-template" $ignore-inside="" id="footer"><div class="footer" {if}=".footer">
+        <div class="container" {bind-html}=".footer"></div>
+    </div>
+    </script><script type="text/mjs-template" $ignore-inside="" id="item-component"><div class="item-group-items level-0"
+    {class}="'item-group-type-' + .item.type" 
+    {init}="this.showInherited = false"
+    {include}=".item.template"></div></script><script type="text/mjs-template" $ignore-inside="" id="jubmotron"><div class="jumbotron" {if}="!this.pageOptions.hideJubmotron">
+    <div class="container">
+        <h1 {bind}=".title"></h1>
+        <p {if}="this.description" {bind}=".description"></p>
+        <p {if}="this.version" {bind}=".version"></p>
+    </div>
+</div></script><script type="text/mjs-template" $ignore-inside="" id="left-menu">
+
+<div class="col-12 col-md-4 col-xl-2 bd-sidebar" 
+    {if}="this.$app.hasNav('left-menu')">
+    <nav class="bd-links" id="bd-docs-nav">
+        <div class="bd-toc-item" 
+             {each}="section in .sourceTree.structure | toArray | navFilter:'left-menu'">
+             <a class="bd-toc-link" 
+                href="#"
+                {bind}=".section.value.groupName"></a>
+
+            <ul class="nav bd-sidenav">
+                <li {each}="item in .section.value.children"
+                    {include}="left-menu.entry"></li>
+            </ul>
+        </div>
+    </nav>
+</div></script><script type="text/mjs-template" $ignore-inside="" id="left-menu.entry">
+<mjs-if value=".item.isGroup">
+    <a href="#"
+        {init}="this.open = false"
+        (click)="this.open = !this.open"
+        class="bd-toc-sublink">
+        <span class="bd-toc-directory">&#128193;</span>
+        <span {bind}=".item.name"></span>
+    </a>
+    <ul class="nav bd-sidenav" 
+        {show}="this.open">
+        <li {each}="item in .item.children"
+            {include}="left-menu.entry"></li>
+    </ul>
+</mjs-if>
+<mjs-if value="!.item.isGroup">
+    <a [href]="this.$app.getItemUrl(this.item)" 
+        class="bd-toc-sublink" 
+        {bind}=".item.nameInPath || .item.name">
+    </a>
+</mjs-if></script><script type="text/mjs-template" $ignore-inside="" id="loader"><div class="page-loader" {show}="this.loading">
+    <div class="page-loader-spinner">
+        <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+        </div>
+    </div>
+</div></script><script type="text/mjs-template" $ignore-inside="" id="multipage-view"><div class="col-12" 
+    {class.col-md-8}="this.$app.hasNav('left-menu')"
+    {class.col-xl-10}="this.$app.hasNav('left-menu')"
+    {view}="DocsView"></div></script><script type="text/mjs-template" $ignore-inside="" id="top-menu">
+<div class="navbar navbar-expand navbar-dark bg-dark fixed-top" 
+        role="navigation"
+        {if}="!this.pageOptions.hideTopMenu"
+        {class.fixed-top}="!this.multipage">
+
+    <a class="navbar-brand" 
+        [href]=".topTitleLink || '#'" 
+        {bind}=".topTitle || .title"></a>
+
+    <mjs-if value="this.$app.hasNav('top-menu')">
+
+    <button class="navbar-toggler" type="button" 
+            data-toggle="collapse" 
+            data-target="#navbarToggler1" 
+            aria-controls="navbarToggler1" 
+            aria-expanded="false" 
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse">
+
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown" 
+                {each}="section in .sourceTree.structure | toArray | navFilter:'top-menu'">
+                <a href="#" 
+                    {init}="this.open = false"
+                    (click)="this.open = true"
+                    (blur)="this.open = false"
+                    (blur.$async)="200"
+                    class="nav-link dropdown-toggle" 
+                    data-toggle="dropdown"
+                    role="button">
+                    <span {bind}=".section.value.groupName"></span>
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu" role="menu" 
+                    {show}="this.open" 
+                    {show.$display}="block">
+                    <div class="dropdown-item" 
+                        {each}="item in .section.value.children"
+                        {include}="top-menu.entry"></div>
+                </div>
+            </li>
+        </ul>
+        <!--
+        <ul class="navbar-nav navbar-right"
+            {if}=".hasOwnProperty('topRightMenu')">
+            <li class="nav-item" 
+                {each}="item in .topRightMenu">
+                <a class="nav-link" 
+                    [href]=".item.href" 
+                    {bind}=".item.name"></a>
+            </li>
+        </ul>-->
+
+    </div>
+    </mjs-if> 
+</div>
+</script><script type="text/mjs-template" $ignore-inside="" id="top-menu.entry"><mjs-if value=".item.isGroup">
+    <a href="#" 
+        class="dropdown-item">
+        <span class="bd-toc-directory">&#128193;</span>
+        <span {bind}=".item.name"></span>
+    </a>
+
+    <div class="dropdown-submenu" role="menu">
+        <div class="dropdown-item" 
+            {each}="item in .item.children"
+            {init}="this.open = false;"
+            {include}="top-menu.entry">
+        </div>
+    </div>
+</mjs-if>
+<mjs-if value="!.item.isGroup">
+    <a [href]="this.$app.getItemUrl(this.item)" 
+        class="dropdown-item" 
+        {bind}=".item.nameInPath || .item.name">
+    </a>
+</mjs-if>
+
+</script>
+
+<script>window.docsData = {
+  "title": "MetaphorJs.animate",
+  "version": "v0.2.0",
+  "styles": [],
+  "scripts": [],
+  "pageOptions": {},
+  "sourceTree": {
+    "items": [
+      {
+        "isFunction": true,
+        "isApiItem": true,
+        "group": "function",
+        "type": "function",
+        "name": "MetaphorJs.animate.getPrefixes",
+        "fullName": "function:MetaphorJs.animate.getPrefixes",
+        "file": "src/animate/getPrefixes.js",
+        "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/getPrefixes.js",
+        "fileType": "js",
+        "template": "js.item.function",
+        "hasInherited": false,
+        "isInherited": false,
+        "level": 1,
+        "flags": {
+          "returns": [
+            {
+              "contentType": "string",
+              "content": "object",
+              "template": "js.flag.returns",
+              "$$04E": "04G"
+            }
+          ]
+        },
+        "plainFlags": {
+          "returns": [
+            "object"
+          ]
+        },
+        "booleanFlags": [],
+        "children": [],
+        "childTypes": [],
+        "line": 72,
+        "description": [
+          {
+            "contentType": "string",
+            "content": "Get css prefixes used in current browser",
+            "template": "js.flag.description",
+            "$$05L": "05N"
+          }
+        ],
+        "$$019": "01B"
+      },
+      {
+        "isFunction": true,
+        "isApiItem": true,
+        "group": "function",
+        "type": "function",
+        "name": "MetaphorJs.animate.getDuration",
+        "fullName": "function:MetaphorJs.animate.getDuration",
+        "file": "src/animate/getDuration.js",
+        "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/getDuration.js",
+        "fileType": "js",
+        "template": "js.item.function",
+        "hasInherited": false,
+        "isInherited": false,
+        "level": 1,
+        "flags": {
+          "returns": [
+            {
+              "contentType": "string",
+              "content": "number",
+              "template": "js.flag.returns",
+              "$$0AG": "0AI"
+            }
+          ]
+        },
+        "plainFlags": {
+          "returns": [
+            "number"
+          ]
+        },
+        "booleanFlags": [],
+        "children": [
+          {
+            "isApiGroup": true,
+            "type": "param",
+            "items": [
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "el",
+                "fullName": "function:MetaphorJs.animate.getDuration/el",
+                "file": "src/animate/getDuration.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/getDuration.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "Element",
+                      "template": "js.flag.type",
+                      "$$0HV": "0HX",
+                      "$$0OJ": "0OL"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "Element"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 46,
+                "$$0CZ": "0D1",
+                "$$0EX": "0EZ",
+                "$$0LL": "0LN"
+              }
+            ],
+            "$$0CM": "0CO"
+          }
+        ],
+        "childTypes": [
+          "param"
+        ],
+        "line": 46,
+        "description": [
+          {
+            "contentType": "string",
+            "content": "Get duration in milliseconds from html\nelement based on current computed style",
+            "template": "js.flag.description",
+            "$$0BN": "0BP"
+          }
+        ],
+        "$$019": "01C"
+      },
+      {
+        "isFunction": true,
+        "isApiItem": true,
+        "group": "function",
+        "type": "function",
+        "name": "MetaphorJs.animate.isCssSupported",
+        "fullName": "function:MetaphorJs.animate.isCssSupported",
+        "file": "src/animate/isCssSupported.js",
+        "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/isCssSupported.js",
+        "fileType": "js",
+        "template": "js.item.function",
+        "hasInherited": false,
+        "isInherited": false,
+        "level": 1,
+        "flags": {
+          "returns": [
+            {
+              "contentType": "string",
+              "content": "boolean",
+              "template": "js.flag.returns",
+              "$$0UO": "0UQ"
+            }
+          ]
+        },
+        "plainFlags": {
+          "returns": [
+            "boolean"
+          ]
+        },
+        "booleanFlags": [],
+        "children": [],
+        "childTypes": [],
+        "line": 12,
+        "description": [
+          {
+            "contentType": "string",
+            "content": "Is css animation supported in current browser",
+            "template": "js.flag.description",
+            "$$0VV": "0VX"
+          }
+        ],
+        "$$019": "01D"
+      },
+      {
+        "isFunction": true,
+        "isApiItem": true,
+        "group": "function",
+        "type": "function",
+        "name": "MetaphorJs.animate.animate",
+        "fullName": "function:MetaphorJs.animate.animate",
+        "file": "src/animate/animate.js",
+        "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+        "fileType": "js",
+        "template": "js.item.function",
+        "hasInherited": false,
+        "isInherited": false,
+        "level": 1,
+        "flags": {
+          "returns": [
+            {
+              "contentType": "typeRef",
+              "content": "MetaphorJs.lib.Promise",
+              "template": "js.flag.returns",
+              "ref": "MetaphorJs.lib.Promise",
+              "$$10Q": "10S"
+            }
+          ]
+        },
+        "plainFlags": {
+          "returns": [
+            "MetaphorJs.lib.Promise"
+          ]
+        },
+        "booleanFlags": [],
+        "children": [
+          {
+            "isApiGroup": true,
+            "type": "param",
+            "items": [
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "el",
+                "fullName": "function:MetaphorJs.animate.animate/el",
+                "file": "src/animate/animate.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "Element",
+                      "template": "js.flag.type",
+                      "$$1AY": "1B0",
+                      "$$22H": "22J"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "Element"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 155,
+                "description": [
+                  {
+                    "contentType": "string",
+                    "content": "Element being animated",
+                    "template": "js.flag.description",
+                    "$$1C5": "1C7",
+                    "$$23O": "23Q"
+                  }
+                ],
+                "$$12T": "12V",
+                "$$17U": "17W",
+                "$$1ZD": "1ZF"
+              },
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "animation",
+                "fullName": "function:MetaphorJs.animate.animate/animation",
+                "file": "src/animate/animate.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "string",
+                      "template": "js.flag.type",
+                      "$$1H3": "1H5",
+                      "$$28M": "28O"
+                    },
+                    {
+                      "contentType": "string",
+                      "content": "function",
+                      "template": "js.flag.type",
+                      "$$1H3": "1H6",
+                      "$$28M": "28P"
+                    },
+                    {
+                      "contentType": "string",
+                      "content": "array",
+                      "template": "js.flag.type",
+                      "$$1H3": "1H7",
+                      "$$28M": "28Q"
+                    },
+                    {
+                      "contentType": "string",
+                      "content": "object",
+                      "template": "js.flag.type",
+                      "$$1H3": "1H8",
+                      "$$28M": "28R"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "string",
+                    "function",
+                    "array",
+                    "object"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 155,
+                "description": [
+                  {
+                    "contentType": "string",
+                    "content": "'string' - registered animation name,<br>\n'function' - fn(el, callback) - your own animation<br>\n'array' - array or stages (class names)<br>\n'array' - [{before}, {after}] - jquery animation<br>\n'object' - {stages, fn, before, after, options, context, duration, start}",
+                    "template": "js.flag.description",
+                    "$$1K4": "1K6",
+                    "$$2BN": "2BP"
+                  }
+                ],
+                "$$12T": "12W",
+                "$$17U": "17X",
+                "$$1ZD": "1ZG"
+              },
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "startCallback",
+                "fullName": "function:MetaphorJs.animate.animate/startCallback",
+                "file": "src/animate/animate.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "function",
+                      "template": "js.flag.type",
+                      "$$1P2": "1P4",
+                      "$$2GL": "2GN"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "function"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 155,
+                "description": [
+                  {
+                    "contentType": "string",
+                    "content": "call this function before animation begins",
+                    "template": "js.flag.description",
+                    "$$1Q9": "1QB",
+                    "$$2HS": "2HU"
+                  }
+                ],
+                "$$12T": "12X",
+                "$$17U": "17Y",
+                "$$1ZD": "1ZH"
+              },
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "stepCallback",
+                "fullName": "function:MetaphorJs.animate.animate/stepCallback",
+                "file": "src/animate/animate.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "function",
+                      "template": "js.flag.type",
+                      "$$1V7": "1V9",
+                      "$$2MQ": "2MS"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "function"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 155,
+                "description": [
+                  {
+                    "contentType": "string",
+                    "content": "call this function between stages",
+                    "template": "js.flag.description",
+                    "$$1WE": "1WG",
+                    "$$2NX": "2NZ"
+                  }
+                ],
+                "$$12T": "12Y",
+                "$$17U": "17Z",
+                "$$1ZD": "1ZI"
+              }
+            ],
+            "$$12G": "12I"
+          }
+        ],
+        "childTypes": [
+          "param"
+        ],
+        "line": 155,
+        "$$019": "01E"
+      },
+      {
+        "isFunction": true,
+        "isApiItem": true,
+        "group": "function",
+        "type": "function",
+        "name": "MetaphorJs.animate.animate.addAnimationType",
+        "fullName": "function:MetaphorJs.animate.animate.addAnimationType",
+        "file": "src/animate/animate.js",
+        "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+        "fileType": "js",
+        "template": "js.item.function",
+        "hasInherited": false,
+        "isInherited": false,
+        "level": 1,
+        "flags": {},
+        "plainFlags": {},
+        "booleanFlags": [],
+        "children": [
+          {
+            "isApiGroup": true,
+            "type": "param",
+            "items": [
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "name",
+                "fullName": "function:MetaphorJs.animate.animate.addAnimationType/name",
+                "file": "src/animate/animate.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "string",
+                      "template": "js.flag.type",
+                      "$$30B": "30D",
+                      "$$3CQ": "3CS"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "string"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 282,
+                "$$2UC": "2UE",
+                "$$2XB": "2XD",
+                "$$39Q": "39S"
+              },
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "stages",
+                "fullName": "function:MetaphorJs.animate.animate.addAnimationType/stages",
+                "file": "src/animate/animate.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/animate.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "array",
+                      "template": "js.flag.type",
+                      "$$360": "362",
+                      "$$3IF": "3IH"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "array"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 282,
+                "$$2UC": "2UF",
+                "$$2XB": "2XE",
+                "$$39Q": "39T"
+              }
+            ],
+            "$$2TW": "2TY"
+          }
+        ],
+        "childTypes": [
+          "param"
+        ],
+        "line": 282,
+        "$$019": "01F"
+      },
+      {
+        "isFunction": true,
+        "isApiItem": true,
+        "group": "function",
+        "type": "function",
+        "name": "MetaphorJs.animate.stop",
+        "fullName": "function:MetaphorJs.animate.stop",
+        "file": "src/animate/stop.js",
+        "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/stop.js",
+        "fileType": "js",
+        "template": "js.item.function",
+        "hasInherited": false,
+        "isInherited": false,
+        "level": 1,
+        "flags": {},
+        "plainFlags": {},
+        "booleanFlags": [],
+        "children": [
+          {
+            "isApiGroup": true,
+            "type": "param",
+            "items": [
+              {
+                "isApiItem": true,
+                "group": "param",
+                "type": "param",
+                "name": "el",
+                "fullName": "function:MetaphorJs.animate.stop/el",
+                "file": "src/animate/stop.js",
+                "originalFile": "/Users/kuindji/projects/metaphorjs/metaphorjs-animate/src/animate/stop.js",
+                "fileType": "js",
+                "template": "js.item.param",
+                "hasInherited": false,
+                "isInherited": false,
+                "level": 2,
+                "flags": {
+                  "type": [
+                    {
+                      "contentType": "string",
+                      "content": "Element",
+                      "template": "js.flag.type",
+                      "$$3UX": "3UZ",
+                      "$$41L": "41N"
+                    }
+                  ]
+                },
+                "plainFlags": {
+                  "type": [
+                    "Element"
+                  ]
+                },
+                "booleanFlags": [],
+                "children": [],
+                "childTypes": [],
+                "line": 15,
+                "$$3Q1": "3Q3",
+                "$$3RZ": "3S1",
+                "$$3YN": "3YP"
+              }
+            ],
+            "$$3PO": "3PQ"
+          }
+        ],
+        "childTypes": [
+          "param"
+        ],
+        "line": 15,
+        "description": [
+          {
+            "contentType": "string",
+            "content": "Stop ongoing animation for given element",
+            "template": "js.flag.description",
+            "$$3OM": "3OO"
+          }
+        ],
+        "$$019": "01G"
+      }
+    ],
+    "content": [],
+    "structure": {
+      "function": {
+        "type": "function",
+        "groupName": "Functions",
+        "where": "top-menu",
+        "children": [
+          {
+            "id": "function:MetaphorJs.animate.animate",
+            "name": "MetaphorJs.animate.animate",
+            "pathPrefix": "item",
+            "isItem": true
+          },
+          {
+            "id": "function:MetaphorJs.animate.animate.addAnimationType",
+            "name": "MetaphorJs.animate.animate.addAnimationType",
+            "pathPrefix": "item",
+            "isItem": true
+          },
+          {
+            "id": "function:MetaphorJs.animate.getDuration",
+            "name": "MetaphorJs.animate.getDuration",
+            "pathPrefix": "item",
+            "isItem": true
+          },
+          {
+            "id": "function:MetaphorJs.animate.getPrefixes",
+            "name": "MetaphorJs.animate.getPrefixes",
+            "pathPrefix": "item",
+            "isItem": true
+          },
+          {
+            "id": "function:MetaphorJs.animate.isCssSupported",
+            "name": "MetaphorJs.animate.isCssSupported",
+            "pathPrefix": "item",
+            "isItem": true
+          },
+          {
+            "id": "function:MetaphorJs.animate.stop",
+            "name": "MetaphorJs.animate.stop",
+            "pathPrefix": "item",
+            "isItem": true
+          }
+        ]
+      }
+    }
+  }
+}</script>
+<div class="page-loader" {show}="this.loading">
+    <div class="page-loader-spinner">
+        <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+        </div>
+    </div>
 </div>
 
 

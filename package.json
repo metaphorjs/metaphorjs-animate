@@ -1,6 +1,6 @@
 {
     "name": "metaphorjs-animate",
-    "version": "0.1.6",
+    "version": "0.2.0",
     "description": "MetaphorJs animation engine",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +9,7 @@
         "type": "git",
         "url": "https://github.com/metaphorjs/metaphorjs-animate.git"
     },
-    "author": "kuindji",
+    "author": "Ivan Kuindzhi",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/metaphorjs/metaphorjs-animate/issues"

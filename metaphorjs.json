@@ -1,94 +1,61 @@
 {
-    "version": "0.1.6",
+    "version": "0.2.0",
     "description": "MetaphorJs animation engine",
 
-    "push": [
-        "github"
-    ],
-
-
     "docs": {
-        "": {
-            "out": "docs",
-            "renderer": "default",
-            "src": [
-                "src/**"
-            ],
-            "itemSort": {
-                "by": "name",
-                "direction": "asc"
-            },
-            "includeExternal": false,
+        "out": "docs",
+        "renderer": {
+            "type": "default",
             "data": {
                 "title": "MetaphorJs.animate",
-                "version": "v0.1.6"
+                "version": "v0.2.0"
             }
-        }
+        },
+        "src": [
+            "src/**"
+        ],
+        "includeExternal": false    
     },
 
     "build": {
         "standalone": {
-            "wrap": true,
-            "global": true,
             "target": "dist/metaphorjs.animate.js",
             "files": [
-                "metaphorjs/src/MetaphorJs.js",
-                [
-                    "src/func/animate.js",
-                    {
-                        "as": "animate"
-                    }
-                ]
+                "src/animate/animate.js",
+                "src/animate/stop.js"
             ],
-            "expose": [
-                "animate",
-                "stopAnimation"
-            ]
+            "options": {
+                "wrap": true,
+                "global": {
+                    "expose": "MetaphorJs"
+                }
+            }  
         },
-        "npm": {
-            "target": "dist/metaphorjs.animate.npm.js",
-            "compile": false,
-            "wrap": {
-                "exported": true,
-                "deferred": true,
-                "args": ["window"]
-            },
-            "files": [
-                [
-                    "src/func/animate.js",
-                    {
-                        "as": "animate"
-                    }
-                ]
-            ],
-            "require": {
-                "metaphorjs-promise": "Promise"
-            },
-            "omit": [
-                "metaphorjs-promise/src/lib/Promise.js"
-            ],
-            "returns": "animate"
+
+        "standalone-min": {
+            "extend": "standalone",
+            "target": "dist/metaphorjs.animate.min.js",
+            "pipe": ["build", "compile", "write"]
         },
+
         "amd": {
-            "auto": false,
             "target": "dist/metaphorjs.animate.amd.js",
             "files": [
-                [
-                    "src/func/animate.js",
-                    {
-                        "returnExports": true
-                    }
-                ]
+                ["src/animate/animate.js",  {"as": "*"}],
+                ["src/animate/stop.js",  {"as": "*"}]
             ],
-            "omit": [
-                "metaphorjs-promise/src/lib/Promise.js"
-            ],
-            "define": {
-                "name": "metaphorjs-animate",
-                "deps": {
-                    "metaphorjs-promise": "Promise"
+            "options": {
+                "amd": {
+                    "name": "metaphorjs-animate",
+                    "return": "MetaphorJs.animate"
                 }
             }
+        },
+
+        "amd-min": {
+            "extend": "amd",
+            "target": "dist/metaphorjs.animate.amd.min.js",
+            "pipe": ["build", "compile", "write"]
         }
     }
 }

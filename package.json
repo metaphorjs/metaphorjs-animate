@@ -14,5 +14,6 @@
     "bugs": {
         "url": "https://github.com/metaphorjs/metaphorjs-animate/issues"
     },
-    "homepage": "https://github.com/metaphorjs/metaphorjs-animate"
+    "homepage": "https://github.com/metaphorjs/metaphorjs-animate",
+    "dependencies": {}
 }

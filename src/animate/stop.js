@@ -41,5 +41,5 @@ module.exports = MetaphorJs.animate.stop = function(el) {
         $(el).stop(true, true);
     }
 
-    dom_data(el, "mjsAnimationQueue", null);
+    MetaphorJs.dom.data(el, "mjsAnimationQueue", null);
 };

@@ -8,7 +8,7 @@ require("metaphorjs/src/func/dom/data.js");
 require("metaphorjs/src/func/dom/addClass.js");
 require("metaphorjs/src/func/dom/removeClass.js");
 
-var isArray                 = require("metaphorjs-shared/src/func/isArray.js"),
+const isArray                 = require("metaphorjs-shared/src/func/isArray.js"),
     isThenable              = require("metaphorjs-shared/src/func/isThenable.js"),
     extend                  = require("metaphorjs-shared/src/func/extend.js"),
     isString                = require("metaphorjs-shared/src/func/isString.js"),

@@ -3,7 +3,7 @@ require("./__init.js");
 require("metaphorjs/src/func/dom/data.js");
 require("metaphorjs/src/func/dom/removeClass.js");
 
-var isFunction = require("metaphorjs-shared/src/func/isFunction.js"),
+const isFunction = require("metaphorjs-shared/src/func/isFunction.js"),
     isArray = require("metaphorjs-shared/src/func/isArray.js"),
     MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
 

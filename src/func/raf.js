@@ -1,13 +1,12 @@
 
-var strUndef = require("metaphorjs-shared/src/var/strUndef.js"),
-    async = require("metaphorjs-shared/src/func/async.js");
+const async = require("metaphorjs-shared/src/func/async.js");
 
 module.exports = function() {
 
     var raf,
         cancel;
 
-    if (typeof window !== strUndef) {
+    if (typeof window !== "undefined") {
         var w   = window;
         raf     = w.requestAnimationFrame ||
                     w.webkitRequestAnimationFrame ||

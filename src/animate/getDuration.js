@@ -2,7 +2,7 @@
 require("./__init.js");
 require("./getPrefixes.js");
 
-var MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
+const MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
 
 module.exports = MetaphorJs.animate.getDuration = function(){
 

@@ -1,6 +1,6 @@
 require("./__init.js");
 
-var MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
+const MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
 
 //https://gist.github.com/gre/1650294
 module.exports = MetaphorJs.animate.easing = {

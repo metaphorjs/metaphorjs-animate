@@ -1,6 +1,6 @@
 require("metaphorjs-promise/src/lib/Promise.js");
 
-var isThenable = require("metaphorjs-shared/src/func/isThenable.js"),
+const isThenable = require("metaphorjs-shared/src/func/isThenable.js"),
     emptyFn = require("metaphorjs-shared/src/func/emptyFn.js");
 
 module.exports = function() {

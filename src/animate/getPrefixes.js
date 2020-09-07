@@ -1,8 +1,7 @@
 
 require("./__init.js");
 
-var undf = require("metaphorjs-shared/src/var/undf.js"),
-    MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
+const MetaphorJs = require("metaphorjs-shared/src/MetaphorJs.js");
 
 module.exports = MetaphorJs.animate.getPrefixes = function(){
 
@@ -24,13 +23,13 @@ module.exports = MetaphorJs.animate.getPrefixes = function(){
                 pfx,
                 i, len;
 
-            if (el.style && el.style['animationName'] !== undf) {
+            if (el.style && el.style['animationName'] !== undefined) {
                 animation = true;
             }
             else {
                 for(i = 0, len = domPrefixes.length; i < len; i++) {
                     pfx = domPrefixes[i];
-                    if (el.style && el.style[ pfx + 'AnimationName' ] !== undf) {
+                    if (el.style && el.style[ pfx + 'AnimationName' ] !== undefined) {
                         animation           = true;
                         animationDelay      = pfx + "AnimationDelay";
                         animationDuration   = pfx + "AnimationDuration";
